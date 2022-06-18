@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Hardware-in-Loop Simulation Controller Interface (HilsCI) Universal Configuration File-->
+<HilsCI version="1.0" device="1" simulation_step="0.1" log_sdlc_frames="true">
+	<!--turn should be set  to one of R = 0,  Thru = 1,  L = 2, U = 3-->
+	<mmu channel_compatibility="00001020A020280202B02300A60218"/>
+	<loadswitch_wirings>
+		<loadswitch_wiring channel="1">
+			<signal_head desc="Phase 1 - Vehicle NB Left">
+				<turning_movement approach="3" turn="2"/>
+			</signal_head>
+		</loadswitch_wiring>
+		<loadswitch_wiring channel="2">
+			<signal_head desc="Phase 2 - Vehicle SB Thru/Right">
+				<turning_movement approach="1" turn="0"/>
+				<turning_movement approach="1" turn="1"/>
+			</signal_head>
+		</loadswitch_wiring>
+		<loadswitch_wiring channel="3">
+			<signal_head desc="Phase 3 - Vehicle EB Left">
+				<turning_movement approach="2" turn="2"/>
+			</signal_head>
+		</loadswitch_wiring>
+		<loadswitch_wiring channel="4">
+			<signal_head desc="Phase 4 - Vehicle WB Thru/Right">
+				<turning_movement approach="4" turn="0"/>
+				<turning_movement approach="4" turn="1"/>
+			</signal_head>
+		</loadswitch_wiring>
+		<loadswitch_wiring channel="5">
+			<signal_head desc="Phase 5 - Vehicle SB Left">
+				<turning_movement approach="1" turn="2"/>
+			</signal_head>
+		</loadswitch_wiring>
+		<loadswitch_wiring channel="6">
+			<signal_head desc="Phase 6 - Vehicle NB Thru/Right">
+				<turning_movement approach="3" turn="0"/>
+				<turning_movement approach="3" turn="1"/>
+			</signal_head>
+		</loadswitch_wiring>
+		<loadswitch_wiring channel="7">
+			<signal_head desc="Phase 7 - Vehicle WB Left">
+				<turning_movement approach="4" turn="2"/>
+			</signal_head>
+		</loadswitch_wiring>
+		<loadswitch_wiring channel="8">
+			<signal_head desc="Phase 8 - Vehicle EB Thru/Right">
+				<turning_movement approach="2" turn="0"/>
+				<turning_movement approach="2" turn="1"/>
+			</signal_head>
+		</loadswitch_wiring>
+	</loadswitch_wirings>
+	<detector_wirings>
+		<detector_wiring channel="1">
+			<sensors>
+				<sensor id="5"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="2">
+			<sensors>
+				<sensor id="1"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="3">
+			<sensors>
+				<sensor id="2"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="5">
+			<sensors>
+				<sensor id="9"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="6">
+			<sensors>
+				<sensor id="8"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="7">
+			<sensors>
+				<sensor id="6"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="8">
+			<sensors>
+				<sensor id="7"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="9">
+			<sensors>
+				<sensor id="28"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="10">
+			<sensors>
+				<sensor id="29"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="11">
+			<sensors>
+				<sensor id="24"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="12">
+			<sensors>
+				<sensor id="25"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="14">
+			<sensors>
+				<sensor id="33"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="15">
+			<sensors>
+				<sensor id="34"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="16">
+			<sensors>
+				<sensor id="35"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="17">
+			<sensors>
+				<sensor id="36"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="18">
+			<sensors>
+				<sensor id="30"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="19">
+			<sensors>
+				<sensor id="42"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="20">
+			<sensors>
+				<sensor id="38"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="21">
+			<sensors>
+				<sensor id="39"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="23">
+			<sensors>
+				<sensor id="45"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="24">
+			<sensors>
+				<sensor id="46"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="25">
+			<sensors>
+				<sensor id="47"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="26">
+			<sensors>
+				<sensor id="48"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="27">
+			<sensors>
+				<sensor id="18"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="28">
+			<sensors>
+				<sensor id="16"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="29">
+			<sensors>
+				<sensor id="12"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="30">
+			<sensors>
+				<sensor id="13"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="32">
+			<sensors>
+				<sensor id="19"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="33">
+			<sensors>
+				<sensor id="20"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="34">
+			<sensors>
+				<sensor id="21"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="35">
+			<sensors>
+				<sensor id="22"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="36">
+			<sensors>
+				<sensor id="23"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="49">
+			<sensors>
+				<sensor id="11"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="50">
+			<sensors>
+				<sensor id="10"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="51">
+			<sensors>
+				<sensor id="32"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="52">
+			<sensors>
+				<sensor id="31"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="53">
+			<sensors>
+				<sensor id="44"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="54">
+			<sensors>
+				<sensor id="43"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="55">
+			<sensors>
+				<sensor id="17"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="56">
+			<sensors>
+				<sensor id="14"/>
+			</sensors>
+		</detector_wiring>
+	</detector_wirings>
+</HilsCI>

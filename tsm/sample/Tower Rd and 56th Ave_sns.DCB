@@ -1,0 +1,5 @@
+
+12
+"ID",I,1,4,0,4,0,,"","",,"Sum",
+"TcsIntID",I,5,4,0,8,0,,"","TransSuite TCS System Detector ID",,"Sum",
+"DetCh",I,9,4,0,8,0,,"","",,"Sum",
