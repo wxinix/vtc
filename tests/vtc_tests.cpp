@@ -29,7 +29,7 @@ using namespace vtc;
 
 /*! A trick to set up logger before entering any teste cases.
  */
-static const auto logger_ready = []() {
+[[maybe_unused]] static const auto logger_ready = []() noexcept {
   return vtc::setup_logger(std::filesystem::current_path(), "test"), true;
 }();
 
@@ -255,7 +255,7 @@ TEST_CASE("SerialApiModule can set params.")
   auto result = SerialDevice::apimodule().open("\x4D\x47\x48\x44\x4C\x43\x31", dev);
   REQUIRE(0 == result);
 
-  SerialDeviceParams params;
+  SerialDeviceParams params{};
   memset(&params, 0, sizeof(params));
   params.mode = 2;
   params.loopback = 0;

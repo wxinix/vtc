@@ -174,6 +174,13 @@ public:
     return the_instance;
   }
 
+  static ITsmApplication *create_tsmapp() noexcept
+  {
+    CComPtr<ITsmApplication> tsmapp;
+    HRESULT hr = tsmapp.CoCreateInstance(L"TsmApi.TsmApplication");
+    return SUCCEEDED(hr) ? tsmapp.Detach() : nullptr;
+  }
+
 private:
   TsmCI() = default;
 
@@ -181,13 +188,6 @@ private:
   {
     finalize();
   };
-
-  ITsmApplication *create_tsmapp() noexcept
-  {
-    CComPtr<ITsmApplication> tsmapp;
-    HRESULT hr = tsmapp.CoCreateInstance(L"TsmApi.TsmApplication");
-    return SUCCEEDED(hr) ? tsmapp.Detach() : nullptr;
-  }
 
   bool load_config(const fs::path &a_path) noexcept
   {

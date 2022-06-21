@@ -221,8 +221,8 @@ struct CuVariableType
 template<typename T>
 concept ValidCuVariable = std::is_same_v<typename T::type, CuVariableType>;
 
-template<Tag, typename ValueT, Index _I = 0>
-struct [[maybe_unused]] CuVariable : Variable<ValueT, _I>
+template<Tag, typename ValueT, Index I = 0>
+struct [[maybe_unused]] CuVariable : Variable<ValueT, I>
 {
   using type = CuVariableType;
 
@@ -321,8 +321,8 @@ struct BiuVariableType
 template<typename T>
 concept ValidBiuVariable = std::is_same_v<typename T::type, BiuVariableType>;
 
-template<Tag, typename ValueT, Index _I = 0>
-struct [[maybe_unused]] BiuVariable : Variable<ValueT, _I>
+template<Tag, typename ValueT, Index I = 0>
+struct [[maybe_unused]] BiuVariable : Variable<ValueT, I>
 {
   using type = BiuVariableType;
 
@@ -348,8 +348,8 @@ struct IoVariableType
 template<typename T>
 concept ValidIoVariable = std::is_same_v<typename T::type, IoVariableType>;
 
-template<Tag, typename ValueT, Index _I = 0>
-struct IoVariable : Variable<ValueT, _I>
+template<Tag, typename ValueT, Index I = 0>
+struct IoVariable : Variable<ValueT, I>
 {
   using type = IoVariableType;
 
@@ -1448,7 +1448,7 @@ class Frame
 public:
   using type = T;
 
-  Frame() = default;
+  Frame() noexcept = default ;
   Frame(Frame &) = delete;
   Frame(Frame &&) = delete;
   Frame &operator=(Frame &) = delete;
@@ -3345,10 +3345,10 @@ std::tuple<bool, std::span<Byte>> Dispatch(std::span<const Byte> a_data_in)
 
 constexpr char hexmap[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-std::string BytesToHexStr(unsigned char *a_data, int a_nbyte)
+std::string BytesToHexStr(const unsigned char *a_data, size_t a_nbyte)
 {
   std::string result(a_nbyte * 2, ' ');
-  for (int i = 0; i < a_nbyte; ++i) {
+  for (size_t i = 0; i < a_nbyte; ++i) {
     result[2 * i] = hexmap[(a_data[i] & 0xF0) >> 4];
     result[2 * i + 1] = hexmap[a_data[i] & 0x0F];
   }
@@ -3489,7 +3489,7 @@ class SerialDevice
   class SerialApiModule
   {
   public:
-    SerialApiModule() : serialapi_{nullptr}
+    SerialApiModule() noexcept : serialapi_{nullptr}
     {
 #ifdef _WIN32
       lib_ = ::LoadLibraryA("vtcdev");
@@ -3521,7 +3521,7 @@ class SerialDevice
 
     [[nodiscard]] bool is_loaded() noexcept
     {
-      auto result = (!lib_) ? false : verify_proc_address();
+      auto result = lib_ && verify_proc_address();
       return result;
     }
 
@@ -3557,12 +3557,14 @@ class SerialDevice
     uint32_t read(DeviceHandle a_dev, std::span<uint8_t> a_buf)
     {
       // Note - we don't assign ec here, because read returns num of bytes read.
-      return ((IoFunc *) (serialapi_[0x08]))(a_dev, a_buf.data(), a_buf.size());
+      return ((IoFunc *) (serialapi_[0x08]))(a_dev, a_buf.data(), static_cast<int32_t>(a_buf.size()));
     }
 
     uint32_t write(DeviceHandle a_dev, const std::span<const uint8_t> a_buf)
     {
-      return ec_ = ((IoFunc *) (serialapi_[0x09]))(a_dev, const_cast<uint8_t *>(a_buf.data()), a_buf.size());
+      return ec_ = ((IoFunc *) (serialapi_[0x09]))(a_dev,
+                                                   const_cast<uint8_t *>(a_buf.data()),
+                                                   static_cast<int32_t>(a_buf.size()));
     }
 
     uint32_t open(const char *a_dev_name, DeviceHandle &a_dev)
@@ -3587,7 +3589,7 @@ class SerialDevice
 
     uint32_t set_idle_mode(DeviceHandle a_dev, HdlcIdleMode a_mode)
     {
-      return ec_ = ((SetValueFunc *) (serialapi_[0x05]))(a_dev, static_cast<uint32_t>(a_mode));
+      return ec_ = ((SetValueFunc *) (serialapi_[0x05]))(a_dev, static_cast<int32_t>(a_mode));
     }
 
     uint32_t set_option(DeviceHandle a_dev, DeviceOptionTag a_opt_tag, int32_t a_opt_val)
@@ -3595,7 +3597,7 @@ class SerialDevice
       return ec_ = ((SetValueByIdFunc *) (serialapi_[0x06]))(a_dev, static_cast<uint32_t>(a_opt_tag), a_opt_val);
     }
 
-    uint32_t ec() const
+    [[nodiscard]] uint32_t ec() const
     {
       return ec_;
     }
@@ -3692,7 +3694,7 @@ public:
       return;
     }
 
-    SerialDeviceParams params;
+    SerialDeviceParams params{};
     memset(&params, 0, sizeof(params));
     params.mode = 2;
     params.loopback = 0;
@@ -3751,16 +3753,16 @@ public:
    * Only when the device is ready, the read and write method can be called.
    * @return
    */
-  bool ready()
+  static bool ready()
   {
     return !apimodule_.ec();
   }
 
 #ifdef _WIN32
-  std::string err_what()
+  static std::string err_what()
   {
     if (apimodule_.ec() == 0) {
-      return std::string(); // No error message has been recorded
+      return std::string{}; // No error message has been recorded
     }
 
     LPSTR buf = nullptr;
@@ -3770,12 +3772,12 @@ public:
     // (because we don't yet know how long the message string will be).
     size_t bufsz = ::FormatMessageA(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL,
+        nullptr,
         apimodule_.ec(),
         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
         (LPSTR) &buf,
         0,
-        NULL);
+        nullptr);
 
     //Copy the error message into a std::string.
     std::string result(buf, bufsz);
@@ -3800,7 +3802,7 @@ public:
     return apimodule_.is_loaded();
   }
 
-  uint32_t ec() const
+  [[nodiscard]] static uint32_t ec()
   {
     return apimodule_.ec();
   }
@@ -3884,7 +3886,7 @@ requires (I <= num_loadswitches) && (I >= 1)
 class LoadswitchChannel
 {
 public:
-  auto constexpr state() const noexcept
+  [[nodiscard]] auto constexpr state() const noexcept
   {
     auto &[g, y, r] = driver_;
     //@formatter:off
@@ -3932,7 +3934,7 @@ requires (I <= num_detector_channels) && (I >= 1)
 class DetectorChannel
 {
 public:
-  auto &activated() const noexcept
+  [[nodiscard]] auto &activated() const noexcept
   {
     return state_.value;
   }
@@ -4088,7 +4090,7 @@ protected:
     });
   }
 
-  bool load_config(const fs::path &a_path, const VerifyFuncGroup a_verify_funcs = {}) noexcept
+  bool load_config(const fs::path &a_path, const VerifyFuncGroup& a_verify_funcs = {}) noexcept
   {
     auto config = pugi::xml_document{};
     auto parse_result = config.load_file(a_path.c_str());
@@ -4108,7 +4110,7 @@ protected:
     auto [verify_simstep, verify_loadswitch_wiring, verify_detector_wiring] = a_verify_funcs;
 
     return (device_->ready())
-        && (verify_simstep ? verify_simstep(step) : true)
+        && (!verify_simstep || verify_simstep(step))
         && load_config(config, verify_loadswitch_wiring)
         && load_config(config, verify_detector_wiring);
   }
@@ -4199,7 +4201,7 @@ private:
     return result;
   }
 
-  void load_mmu16_channel_compatibility(pugi::xml_document &a_config)
+  static void load_mmu16_channel_compatibility(pugi::xml_document &a_config)
   {
     auto xpath = a_config.select_node("/HilsCI/mmu/@channel_compatibility");
 
