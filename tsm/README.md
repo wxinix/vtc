@@ -1,6 +1,6 @@
 # TransModeller HILS Controller Interface
 
-TransModeler is a powerful traffic simulator with very good modelling realism of signalized intersections.  The Hardware-in-loop Simulation Controller Interface (HilsCI) for TransModeler is implemented using the VTC framework.
+TransModeler is a powerful traffic simulator with very good modelling realism of signalized intersections.  The Hardware-in-the-loop Simulation Controller Interface (HilsCI) for TransModeler is implemented using the VTC framework.
 
 ## How to build
 
