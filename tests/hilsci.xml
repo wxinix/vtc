@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Hardware-in-Loop Simulation Controller Interface (HilsCI) Universal Configuration File-->
+<HilsCI version="1.0" device="1" simulation_step="0.05" log_sdlc_frames="true">
+	<!--turn should be set  to one of R = 0,  Thru = 1,  L = 2, U = 3-->
+	<mmu channel_compatibility="00001020A020280202B02300A60218"/>
+	<loadswitch_wirings>
+		<loadswitch_wiring channel="1">
+			<signal_head desc="Phase 1 - Vehicle SB Left">
+				<turning_movement approach="3" turn="2"/>
+			</signal_head>
+		</loadswitch_wiring>
+		<loadswitch_wiring channel="2">
+			<signal_head desc="Phase 2 - Vehicle NB Thru/Right">
+				<turning_movement approach="1" turn="0"/>
+				<turning_movement approach="1" turn="1"/>
+			</signal_head>
+		</loadswitch_wiring>
+		<loadswitch_wiring channel="3">
+			<signal_head desc="Phase 3 - Vehicle EB Left">
+				<turning_movement approach="4" turn="2"/>
+			</signal_head>
+		</loadswitch_wiring>
+		<loadswitch_wiring channel="4">
+			<signal_head desc="Phase 4 - Vehicle WB Thru/Right">
+				<turning_movement approach="2" turn="0"/>
+				<turning_movement approach="2" turn="1"/>
+			</signal_head>
+		</loadswitch_wiring>
+		<loadswitch_wiring channel="5">
+			<signal_head desc="Phase 5 - Vehicle NB Left">
+				<turning_movement approach="1" turn="0"/>
+				<turning_movement approach="1" turn="1"/>
+			</signal_head>
+		</loadswitch_wiring>
+		<loadswitch_wiring channel="6">
+			<signal_head desc="Phase 6 - Vehicle SB Thru/Right">
+				<turning_movement approach="3" turn="0"/>
+				<turning_movement approach="3" turn="1"/>
+			</signal_head>
+		</loadswitch_wiring>
+		<loadswitch_wiring channel="7">
+			<signal_head desc="Phase 7 - Vehicle WB Left">
+				<turning_movement approach="2" turn="2"/>
+			</signal_head>
+		</loadswitch_wiring>
+		<loadswitch_wiring channel="8">
+			<signal_head desc="Phase 8 - Vehicle EB Thru/Right">
+				<turning_movement approach="4" turn="0"/>
+				<turning_movement approach="4" turn="1"/>
+			</signal_head>
+		</loadswitch_wiring>
+	</loadswitch_wirings>
+	<detector_wirings>
+		<detector_wiring channel="1">
+			<sensors>
+				<sensor id="12"/>
+				<sensor id="13"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="2">
+			<sensors>
+				<sensor id="12"/>
+				<sensor id="13"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="3">
+			<sensors>
+				<sensor id="12"/>
+				<sensor id="13"/>
+			</sensors>
+		</detector_wiring>
+		<detector_wiring channel="4">
+			<sensors>
+				<sensor id="12"/>
+				<sensor id="13"/>
+			</sensors>
+		</detector_wiring>
+	</detector_wirings>
+</HilsCI>
