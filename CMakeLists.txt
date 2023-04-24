@@ -3,3 +3,4 @@ set(CMAKE_CXX_STANDARD 23)
 project(vtc)
 
 add_subdirectory(tests)
+add_subdirectory(sdlclogger)
