@@ -2008,7 +2008,8 @@ T variable{};
  * @tparam MaxChannel - Max number of channels the MMU supports.
  * @return The size of the compatibility set of the given channel.
  */
-template<size_t Channel, size_t MaxChannel> requires ((Channel >= 1) && (Channel <= MaxChannel))
+template<size_t Channel, size_t MaxChannel>
+requires ((Channel >= 1) && (Channel <= MaxChannel))
 constexpr size_t ChannelSegmentSize()
 {
   return (MaxChannel - Channel);
@@ -2023,7 +2024,8 @@ constexpr size_t ChannelSegmentSize()
  * MMU16, the byte array has 120 bytes. Each channel has a start position and total number of relevant
  * bytes in the stream describing the channel's compatibility.
  */
-template<size_t Channel, size_t MaxChannel = 16> requires ((Channel >= 1) && (Channel <= MaxChannel))
+template<size_t Channel, size_t MaxChannel = 16>
+requires ((Channel >= 1) && (Channel <= MaxChannel))
 constexpr size_t ChannelSegmentStartPos()
 {
   if constexpr (Channel == 1) {
@@ -2237,52 +2239,52 @@ void SetMMU16ChannelCompatibility(const std::string &a_hexstr)
   std::string bitstr{};
   for (auto &c : a_hexstr) {
     switch (std::toupper(c)) {
-      case '0':
+      case '0':/* */
         bitstr.append("0000");
         break;
-      case '1':
+      case '1':/* */
         bitstr.append("0001");
         break;
-      case '2':
+      case '2':/* */
         bitstr.append("0010");
         break;
-      case '3':
+      case '3':/* */
         bitstr.append("0011");
         break;
-      case '4':
+      case '4':/* */
         bitstr.append("0100");
         break;
-      case '5':
+      case '5':/* */
         bitstr.append("0101");
         break;
-      case '6':
+      case '6':/* */
         bitstr.append("0110");
         break;
-      case '7':
+      case '7':/* */
         bitstr.append("0111");
         break;
-      case '8':
+      case '8':/* */
         bitstr.append("1000");
         break;
-      case '9':
+      case '9':/* */
         bitstr.append("1001");
         break;
-      case 'A':
+      case 'A':/* */
         bitstr.append("1010");
         break;
-      case 'B':
+      case 'B':/* */
         bitstr.append("1011");
         break;
-      case 'C':
+      case 'C':/* */
         bitstr.append("1100");
         break;
-      case 'D':
+      case 'D':/* */
         bitstr.append("1101");
         break;
-      case 'E':
+      case 'E':/* */
         bitstr.append("1110");
         break;
-      case 'F':
+      case 'F':/* */
         bitstr.append("1111");
         break;
     }
@@ -4648,55 +4650,55 @@ class SerialDevice
 
     uint32_t cancel_reading(DeviceHandle a_dev)
     {
-      return ec_ = ((SimpleCommandFunc *)(serialapi_[0x00]))(a_dev);
+      return ec_ = ((SimpleCommandFunc *) (serialapi_[0x00]))(a_dev);
     }
 
     uint32_t cancel_writing(DeviceHandle a_dev)
     {
-      return ec_ = ((SimpleCommandFunc *)(serialapi_[0x01]))(a_dev);
+      return ec_ = ((SimpleCommandFunc *) (serialapi_[0x01]))(a_dev);
     }
 
     uint32_t read(DeviceHandle a_dev, std::span<uint8_t> a_buf)
     {
       // Note - we don't assign ec here, because read returns num of bytes read.
-      return ((IoFunc *)(serialapi_[0x08]))(a_dev, a_buf.data(), static_cast<int32_t>(a_buf.size()));
+      return ((IoFunc *) (serialapi_[0x08]))(a_dev, a_buf.data(), static_cast<int32_t>(a_buf.size()));
     }
 
     uint32_t write(DeviceHandle a_dev, const std::span<const uint8_t> a_buf)
     {
-      return ec_ = ((IoFunc *)(serialapi_[0x09]))(a_dev,
-                                                  const_cast<uint8_t *>(a_buf.data()),
-                                                  static_cast<int32_t>(a_buf.size()));
+      return ec_ = ((IoFunc *) (serialapi_[0x09]))(a_dev,
+                                                   const_cast<uint8_t *>(a_buf.data()),
+                                                   static_cast<int32_t>(a_buf.size()));
     }
 
     uint32_t open(const char *a_dev_name, DeviceHandle &a_dev)
     {
-      return ec_ = ((OpenFunc *)(serialapi_[0x07]))(const_cast<char *>(a_dev_name), &a_dev);
+      return ec_ = ((OpenFunc *) (serialapi_[0x07]))(const_cast<char *>(a_dev_name), &a_dev);
     }
 
     uint32_t close(DeviceHandle a_dev)
     {
-      return ec_ = ((SimpleCommandFunc *)(serialapi_[0x02]))(a_dev);
+      return ec_ = ((SimpleCommandFunc *) (serialapi_[0x02]))(a_dev);
     }
 
     uint32_t enable_read(DeviceHandle a_dev)
     {
-      return ec_ = ((SetValueFunc *)(serialapi_[0x03]))(a_dev, 1);
+      return ec_ = ((SetValueFunc *) (serialapi_[0x03]))(a_dev, 1);
     }
 
     uint32_t set_params(DeviceHandle a_dev, SerialDeviceParams &a_params)
     {
-      return ec_ = ((SetParamsFunc *)(serialapi_[0x04]))(a_dev, &a_params);
+      return ec_ = ((SetParamsFunc *) (serialapi_[0x04]))(a_dev, &a_params);
     }
 
     uint32_t set_idle_mode(DeviceHandle a_dev, HdlcIdleMode a_mode)
     {
-      return ec_ = ((SetValueFunc *)(serialapi_[0x05]))(a_dev, static_cast<int32_t>(a_mode));
+      return ec_ = ((SetValueFunc *) (serialapi_[0x05]))(a_dev, static_cast<int32_t>(a_mode));
     }
 
     uint32_t set_option(DeviceHandle a_dev, DeviceOptionTag a_opt_tag, int32_t a_opt_val)
     {
-      return ec_ = ((SetValueByIdFunc *)(serialapi_[0x06]))(a_dev, static_cast<uint32_t>(a_opt_tag), a_opt_val);
+      return ec_ = ((SetValueByIdFunc *) (serialapi_[0x06]))(a_dev, static_cast<uint32_t>(a_opt_tag), a_opt_val);
     }
 
     [[nodiscard]] uint32_t ec() const
@@ -4935,7 +4937,7 @@ public:
         nullptr,
         apimodule_.ec(),
         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPSTR)&buf,
+        (LPSTR) &buf,
         0,
         nullptr);
 
@@ -5065,8 +5067,8 @@ private:
   LoadswitchDriver<I> driver_{make_loadswitch_driver<I>()};
 };
 
-template<LoadswitchChannelID I> requires (I <= num_loadswitches) &&(I
->= 1)
+template<LoadswitchChannelID I> requires (I >= 1) &&(I
+<= num_loadswitches)
 using LoadswitchWiring = std::tuple<LoadswitchChannel<I>, SignalHead>;
 
 struct LoadswitchWiringFactory

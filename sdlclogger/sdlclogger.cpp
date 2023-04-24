@@ -30,11 +30,11 @@ int main()
         while (sdlc_enabled) {
           auto count = device->read(vtc::serial::buffer);
           auto frame_str = vtc::BytesToHexStr(vtc::serial::buffer.data(), count);
-          // The first byte is SDLC address, the second one is SDLC control byte, always 0x83,  the third byte is FrameID.
+          // The first byte is SDLC address, the second SDLC control byte, always 0x83, and the third FrameID.
           vtc::logger()->info("FrameID {} Addr {}: {}", vtc::serial::buffer[2], vtc::serial::buffer[0], frame_str);
         }
-      })
-      .detach();
+      }
+  ).detach();
 
   std::cout << "Press any key to terminate..." << std::endl;
   std::cin.get();
