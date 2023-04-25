@@ -159,11 +159,6 @@ using Integer = uint32_t;
 using Index = uint16_t;
 
 /*!
- * Type tag for specializing variable template.
- */
-using Tag = uint32_t;
-
-/*!
  * Validate if an index is valid given its allowed maximum value.
  * @tparam I The subject index value.
  * @tparam N Maximum allowed index value.
