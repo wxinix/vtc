@@ -5,7 +5,7 @@
   MPL 1.1/GPL 2.0/LGPL 2.1 tri-license
 */
 
-#pragma warning(disable:4068)
+#pragma warning(disable : 4068)
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "OCUnusedTypeAliasInspection"
 #pragma ide diagnostic ignored "UnusedParameter"
@@ -33,9 +33,9 @@
 #include <matchit/matchit.h>
 #include <pugixml/pugixml.hpp>
 
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/msvc_sink.h>
+#include <spdlog/sinks/rotating_file_sink.h>
+#include <spdlog/spdlog.h>
 
 namespace vtc {
 
@@ -59,15 +59,14 @@ struct VtcLoggerHolder
   /*!
    * Inline initialization is possible with C++17. Alternatively, we can define
    * the logger separately outside VtcLoggerHolder class declaration but inside
-   * the unnamed namespace. In this case, VtcLoggerHolder is a member of unnamed
-   * namespace, its static data member does not have external linkage, which
-   * allows this header to be included multiple times in different translation
-   * unit.
+   * the unnamed namespace. VtcLoggerHolder is a member of unnamed namespace,
+   * its static data member does not have external linkage, which allows this
+   * header to be included multiple times in different translation unit.
    */
   inline static std::atomic<VtcLogger> logger{nullptr};
 };
 
-} // End of unnamed namespace for VtcLoggerHolder
+}// namespace
 
 /*!
  * Thread-safe access to the singleton logger. It ought to be called only after
@@ -111,10 +110,10 @@ bool setup_logger(const fs::path &a_path, const std::string &a_logger_name)
   // create_directory would return if exists.
   if (fs::create_directory(p, ec) || fs::exists(p)) {
     const auto log_file = (p / (a_logger_name + "-log.txt")).string();
-    the_logger = rotating_logger_mt(a_logger_name, // Internal logger name
-                                    log_file,      // Output file name
-                                    1024 * 1024,   // 1 MB log file size
-                                    3);            // rotate by 3 files at most
+    the_logger = rotating_logger_mt(a_logger_name,// Internal logger name
+                                    log_file,     // Output file name
+                                    1024 * 1024,  // 1 MB log file size
+                                    3);           // rotate by 3 files at most
     default_logger_created = false;
   } else {
 #ifdef _WIN32
@@ -176,8 +175,7 @@ concept ValidValueType = std::disjunction_v<
     std::is_same<T, Bit>,
     std::is_same<T, Byte>,
     std::is_same<T, Word>,
-    std::is_same<T, Integer>
->;
+    std::is_same<T, Integer>>;
 
 /*!
  * A cabinet variable representing an indexed cabinet entity, for example,
@@ -188,7 +186,7 @@ concept ValidValueType = std::disjunction_v<
  * @tparam T The value type of the cabinet variable.
  * @tparam I Index of the cabinet variable.
  */
-template<typename T, Index I> requires ValidValueType<T>
+template<ValidValueType T, Index I>
 struct Variable
 {
   using value_t = T;
@@ -230,7 +228,7 @@ using ValueType = typename T::Variable::value_t;
  * @param str String view
  * @return
  */
-template<std::size_t ...Is>
+template<std::size_t... Is>
 constexpr auto substring_as_array(std::string_view str, std::index_sequence<Is...>)
 {
   return std::array{str[Is]..., '\n'};
@@ -257,7 +255,7 @@ constexpr auto type_name() -> std::string_view
   constexpr auto suffix = std::string_view{">(void)"};
   constexpr auto function = std::string_view{__FUNCSIG__};
 #else
-# error
+#error
   Unsupported compiler
 #endif
   constexpr auto start = function.find(prefix) + prefix.size();
@@ -267,8 +265,8 @@ constexpr auto type_name() -> std::string_view
   return function.substr(start, (end - start));
 }
 
-template<Index Offset, typename SeqType> /* */
-requires (Offset >= 0)
+template<Index Offset, typename SeqType>
+  requires(Offset >= 0)
 struct offset_sequence;
 
 /*!
@@ -354,7 +352,7 @@ struct CuVariable : Variable<ValueT, I>
  * CU variable instances in a unified fashion.
  * @tparam T The type of the variable.
  */
-template<typename T> requires ValidCuVariable<T>
+template<ValidCuVariable T>
 T variable{};
 
 /*!
@@ -384,7 +382,7 @@ constexpr Byte maxPhases{40};
  */
 constexpr Byte maxPhaseGroups{5};
 
-}
+}// namespace phase
 
 /*!
  * .1.3.6.1.4.1.1206.4.2.1.2
@@ -416,7 +414,7 @@ constexpr Byte maxVehicleDetectorStatusGroups{16};
  */
 constexpr Byte maxPedestrianDetectors{72};
 
-}
+}// namespace detector
 
 /*!
  * .1.3.6.1.4.1.1206.4.2.1.3
@@ -439,7 +437,7 @@ constexpr Byte maxAlarmGroups{1};
  */
 constexpr Byte maxSpecialFunctionOutputs{16};
 
-}
+}// namespace unit
 
 /*!
  * .1.3.6.1.4.1.1206.4.2.1.4
@@ -463,7 +461,7 @@ constexpr Byte maxPatterns{128};
  */
 constexpr Byte maxSplits{128};
 
-}
+}// namespace coord
 
 /*!
  * .1.3.6.1.4.1.1206.4.2.1.5
@@ -478,7 +476,7 @@ namespace timebaseAsc {
  */
 constexpr Byte maxTimebaseAscActions{64};
 
-}
+}// namespace timebaseAsc
 
 /*!
  * .1.3.6.1.4.1.1206.4.2.1.6
@@ -493,7 +491,7 @@ namespace preempt {
  */
 constexpr Byte maxPreempts{40};
 
-}
+}// namespace preempt
 
 /*!
  * .1.3.6.1.4.1.1206.4.2.1.7
@@ -523,7 +521,7 @@ constexpr Byte maxSequences{20};
  */
 constexpr Byte maxRingControlGroups{2};
 
-}
+}// namespace ring
 
 /*!
  * .1.3.6.1.4.1.1206.4.2.1.8
@@ -547,7 +545,7 @@ constexpr Byte maxChannels{32};
  */
 constexpr Byte maxChannelStatusGroups{4};
 
-}
+}// namespace channel
 
 /*!
  * .1.3.6.1.4.1.1206.4.2.1.9
@@ -571,7 +569,7 @@ constexpr Byte maxOverlaps{32};
  */
 constexpr Byte maxOverlapStatusGroups{4};
 
-}
+}// namespace overlap
 
 /*!
  * .1.3.6.1.4.1.1206.3.36.1.1.13
@@ -581,9 +579,9 @@ namespace prioritor {
 constexpr Byte maxPrioritors{16};
 constexpr Byte maxPrioritorGroups{2};
 
-}
+}// namespace prioritor
 
-} // end of namespace vtc::cu
+}// namespace cu
 
 namespace biu {
 
@@ -614,10 +612,10 @@ struct BiuVariable : Variable<ValueT, I>
  * BIU variable instances in a unified fashion.
  * @tparam T The type of the variable.
  */
-template<typename T> requires ValidBiuVariable<T>
+template<ValidBiuVariable T>
 T variable{};
 
-} // end of namespace vc::biu
+}// namespace biu
 
 namespace io {
 
@@ -653,7 +651,7 @@ struct IoVariable : Variable<ValueT, I>
  * IO variable instances in a unified fashion.
  * @tparam T The type of the variable.
  */
-template<typename T> requires ValidIoVariable<T>
+template<ValidIoVariable T>
 T variable{};
 
 namespace output {
@@ -700,8 +698,8 @@ struct AuxFunctionOn : IoVariable<OutputType, Bit>
  * Per Phase or Per Pedestrian Movement output - see NEMA-TS2 3.5.3.12
  * @tparam I Channel index, [1, maxChannels].
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::channel::maxChannels>
+template<Index I>
+  requires ValidIndex<I, cu::channel::maxChannels>
 struct ChannelGreenWalkDriver : IoVariable<OutputType, Bit, I>
 {
 };
@@ -714,8 +712,8 @@ struct ChannelGreenWalkDriver : IoVariable<OutputType, Bit, I>
  * Per Phase or Per Pedestrian Movement output - see NEMA-TS2 3.5.3.12
  * @tparam I Channel index, [1, maxChannels].
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::channel::maxChannels>
+template<Index I>
+  requires ValidIndex<I, cu::channel::maxChannels>
 struct ChannelRedDoNotWalkDriver : IoVariable<OutputType, Bit, I>
 {
 };
@@ -728,62 +726,62 @@ struct ChannelRedDoNotWalkDriver : IoVariable<OutputType, Bit, I>
  * Per Phase or Per Pedestrian Movement output - see NEMA-TS2 3.5.3.12
  * @tparam I Channel index, [1, maxChannels].
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::channel::maxChannels>
+template<Index I>
+  requires ValidIndex<I, cu::channel::maxChannels>
 struct ChannelYellowPedClearDriver : IoVariable<OutputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PhaseGreen : IoVariable<OutputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PhaseYellow : IoVariable<OutputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PhaseRed : IoVariable<OutputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PhaseWalk : IoVariable<OutputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PhasePedClearance : IoVariable<OutputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PhaseDoNotWalk : IoVariable<OutputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PhasePreClear : IoVariable<OutputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PhasePreClear2 : IoVariable<OutputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PhaseAdvWarning : IoVariable<OutputType, Bit, I>
 {
 };
@@ -797,14 +795,14 @@ struct PhaseAdvWarning : IoVariable<OutputType, Bit, I>
  * Per Phase - see NEMA-TS2 3.5.3.12
  * @tparam I Index of the phase, [1, maxPhases]
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PhaseCheck : IoVariable<OutputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PedCall : IoVariable<OutputType, Bit, I>
 {
 };
@@ -818,8 +816,8 @@ struct PedCall : IoVariable<OutputType, Bit, I>
  * Per Phase - see NEMA-TS2 3.5.3.12
  * @tparam I Index of the phase, [1, maxPhases]
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PhaseOn : IoVariable<OutputType, Bit, I>
 {
 };
@@ -835,14 +833,14 @@ struct PhaseOn : IoVariable<OutputType, Bit, I>
  * Per Phase - see NEMA-TS2 3.5.3.12
  * @tparam I Index of the phase, [1, maxPhases]
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PhaseNext : IoVariable<OutputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PhaseOmitStatus : IoVariable<OutputType, Bit, I>
 {
 };
@@ -947,8 +945,8 @@ struct StatusBitC_Ring_2 : IoVariable<OutputType, Bit>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::overlap::maxOverlaps>
+template<Index I>
+  requires ValidIndex<I, cu::overlap::maxOverlaps>
 struct OverlapProtectedGreen : IoVariable<OutputType, Bit, I>
 {
 };
@@ -965,8 +963,8 @@ struct OverlapProtectedGreen : IoVariable<OutputType, Bit, I>
  * Per Unit - See NEMA-TS2 3.5.5.6
  * @tparam I Overlap index, [1, maxOverlaps]
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::overlap::maxOverlaps>
+template<Index I>
+  requires ValidIndex<I, cu::overlap::maxOverlaps>
 struct OverlapGreen : IoVariable<OutputType, Bit, I>
 {
 };
@@ -983,8 +981,8 @@ struct OverlapGreen : IoVariable<OutputType, Bit, I>
  * Per Unit - See NEMA-TS2 3.5.5.6
  * @tparam I Overlap index, [1, maxOverlaps]
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::overlap::maxOverlaps>
+template<Index I>
+  requires ValidIndex<I, cu::overlap::maxOverlaps>
 struct OverlapRed : IoVariable<OutputType, Bit, I>
 {
 };
@@ -1001,26 +999,26 @@ struct OverlapRed : IoVariable<OutputType, Bit, I>
  * Per Unit - See NEMA-TS2 3.5.5.6
  * @tparam I Overlap index, [1, maxOverlaps]
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::overlap::maxOverlaps>
+template<Index I>
+  requires ValidIndex<I, cu::overlap::maxOverlaps>
 struct OverlapYellow : IoVariable<OutputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::preempt::maxPreempts>
+template<Index I>
+  requires ValidIndex<I, cu::preempt::maxPreempts>
 struct PreemptStatus : IoVariable<OutputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::preempt::maxPreempts>
+template<Index I>
+  requires ValidIndex<I, cu::preempt::maxPreempts>
 struct PreemptStatusFlash : IoVariable<OutputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::unit::maxSpecialFunctionOutputs>
+template<Index I>
+  requires ValidIndex<I, cu::unit::maxSpecialFunctionOutputs>
 struct SpecialFunction : IoVariable<OutputType, Bit, I>
 {
 };
@@ -1175,18 +1173,18 @@ struct Watchdog : IoVariable<OutputType, Bit>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, biu::max_det_bius>
+template<Index I>
+  requires ValidIndex<I, biu::max_det_bius>
 struct DetectorReset : IoVariable<OutputType, Byte, I>
 {
 };
 
-} // end of namespace vc::io::output
+}// namespace output
 
 namespace input {
 
-template<Index I> /* */
-requires ValidIndex<I, cu::detector::maxVehicleDetectors>
+template<Index I>
+  requires ValidIndex<I, cu::detector::maxVehicleDetectors>
 struct ChannelFaultStatus : IoVariable<InputType, Bit, I>
 {
 };
@@ -1218,14 +1216,14 @@ struct NotActive : IoVariable<InputType, Bit>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::overlap::maxOverlaps>
+template<Index I>
+  requires ValidIndex<I, cu::overlap::maxOverlaps>
 struct OverlapOmit : IoVariable<InputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::coord::maxPatterns>
+template<Index I>
+  requires ValidIndex<I, cu::coord::maxPatterns>
 struct PatternInput : IoVariable<InputType, Bit, I>
 {
 };
@@ -1235,14 +1233,14 @@ struct PatternInput : IoVariable<InputType, Bit, I>
  * phase of the CU.
  * @tparam I
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::detector::maxPedestrianDetectors>
+template<Index I>
+  requires ValidIndex<I, cu::detector::maxPedestrianDetectors>
 struct PedDetCall : IoVariable<InputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PhaseForceOff : IoVariable<InputType, Bit, I>
 {
 };
@@ -1288,8 +1286,8 @@ struct PhaseForceOff : IoVariable<InputType, Bit, I>
  * Hold a phase.
  * @tparam I Index of the phase.
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PhaseHold : IoVariable<InputType, Bit, I>
 {
 };
@@ -1309,8 +1307,8 @@ struct PhaseHold : IoVariable<InputType, Bit, I>
  * Inhibit the selection of a phase due to a pedestrian call on that phase.
  * @tparam I Index of the phase.
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PhasePedOmit : IoVariable<InputType, Bit, I>
 {
 };
@@ -1328,68 +1326,68 @@ struct PhasePedOmit : IoVariable<InputType, Bit, I>
  * Omit a phase.
  * @tparam I Index of the phase.
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::phase::maxPhases>
+template<Index I>
+  requires ValidIndex<I, cu::phase::maxPhases>
 struct PhasePhaseOmit : IoVariable<InputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::preempt::maxPreempts>
+template<Index I>
+  requires ValidIndex<I, cu::preempt::maxPreempts>
 struct PreemptGateDown : IoVariable<InputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::preempt::maxPreempts>
+template<Index I>
+  requires ValidIndex<I, cu::preempt::maxPreempts>
 struct PreemptGateUp : IoVariable<InputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::preempt::maxPreempts>
+template<Index I>
+  requires ValidIndex<I, cu::preempt::maxPreempts>
 struct PreemptHighPrioritorLow : IoVariable<InputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::preempt::maxPreempts>
+template<Index I>
+  requires ValidIndex<I, cu::preempt::maxPreempts>
 struct PreemptInput : IoVariable<InputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::preempt::maxPreempts>
+template<Index I>
+  requires ValidIndex<I, cu::preempt::maxPreempts>
 struct PreemptInputCRC : IoVariable<InputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::preempt::maxPreempts>
+template<Index I>
+  requires ValidIndex<I, cu::preempt::maxPreempts>
 struct PreemptInputNormalOff : IoVariable<InputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::preempt::maxPreempts>
+template<Index I>
+  requires ValidIndex<I, cu::preempt::maxPreempts>
 struct PreemptInputNormalOn : IoVariable<InputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::prioritor::maxPrioritors>
+template<Index I>
+  requires ValidIndex<I, cu::prioritor::maxPrioritors>
 struct PrioritorCheckIn : IoVariable<InputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::prioritor::maxPrioritors>
+template<Index I>
+  requires ValidIndex<I, cu::prioritor::maxPrioritors>
 struct PrioritorCheckOut : IoVariable<InputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires (I >= 1)
+template<Index I>
+  requires(I >= 1)
 struct PrioritorPreemptDetector : IoVariable<InputType, Bit, I>
 {
 };
@@ -1403,8 +1401,8 @@ struct PrioritorPreemptDetector : IoVariable<InputType, Bit, I>
  * sustained.
  * @tparam I Index of the ring.
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::ring::maxRings>
+template<Index I>
+  requires ValidIndex<I, cu::ring::maxRings>
 struct RingForceOff : IoVariable<InputType, Bit, I>
 {
 };
@@ -1415,8 +1413,8 @@ struct RingForceOff : IoVariable<InputType, Bit, I>
  * Green.
  * @tparam I Index of the ring.
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::ring::maxRings>
+template<Index I>
+  requires ValidIndex<I, cu::ring::maxRings>
 struct RingInhibitMaxTermination : IoVariable<InputType, Bit, I>
 {
 };
@@ -1426,14 +1424,14 @@ struct RingInhibitMaxTermination : IoVariable<InputType, Bit, I>
  * all phases of the ring.
  * @tparam I Index of the ring.
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::ring::maxRings>
+template<Index I>
+  requires ValidIndex<I, cu::ring::maxRings>
 struct RingMax2Selection : IoVariable<InputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::ring::maxRings>
+template<Index I>
+  requires ValidIndex<I, cu::ring::maxRings>
 struct RingMax3Selection : IoVariable<InputType, Bit, I>
 {
 };
@@ -1442,8 +1440,8 @@ struct RingMax3Selection : IoVariable<InputType, Bit, I>
  * An input to cause omission of Red Clearance interval timing(s).
  * @tparam I Index of the ring.
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::ring::maxRings>
+template<Index I>
+  requires ValidIndex<I, cu::ring::maxRings>
 struct RingOmitRedClearance : IoVariable<InputType, Bit, I>
 {
 };
@@ -1460,8 +1458,8 @@ struct RingOmitRedClearance : IoVariable<InputType, Bit, I>
  *
  * @tparam I Index of the ring.
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::ring::maxRings>
+template<Index I>
+  requires ValidIndex<I, cu::ring::maxRings>
 struct RingPedestrianRecycle : IoVariable<InputType, Bit, I>
 {
 };
@@ -1476,8 +1474,8 @@ struct RingPedestrianRecycle : IoVariable<InputType, Bit, I>
  * manner and with appropriate change and clearance intervals.
  * @tparam I Index of the ring.
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::ring::maxRings>
+template<Index I>
+  requires ValidIndex<I, cu::ring::maxRings>
 struct RingRedRest : IoVariable<InputType, Bit, I>
 {
 };
@@ -1494,14 +1492,14 @@ struct RingRedRest : IoVariable<InputType, Bit, I>
  * interval of that phase.
  * @tparam I Index of the ring.
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::ring::maxRings>
+template<Index I>
+  requires ValidIndex<I, cu::ring::maxRings>
 struct RingStopTiming : IoVariable<InputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::ring::maxRings>
+template<Index I>
+  requires ValidIndex<I, cu::ring::maxRings>
 struct SpecialFunctionInput : IoVariable<InputType, Bit, I>
 {
 };
@@ -1808,21 +1806,21 @@ struct UnitWalkRestModifier : IoVariable<InputType, Bit>
  * See NEMA-TS2 3.5.5.5
  * @tparam I
  */
-template<Index I> /* */
-requires ValidIndex<I, cu::detector::maxVehicleDetectors>
+template<Index I>
+  requires ValidIndex<I, cu::detector::maxVehicleDetectors>
 struct VehicleDetCall : IoVariable<InputType, Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, biu::max_det_bius>
+template<Index I>
+  requires ValidIndex<I, biu::max_det_bius>
 struct VehicleDetReset : IoVariable<InputType, Byte, I>
 {
 };
 
-} // end of namespace vc::io::input
+}// namespace input
 
-} // end of namespace vtc::io
+}// namespace io
 
 namespace mmu {
 
@@ -1845,20 +1843,20 @@ struct MmuVariable : Variable<ValueT, I>
   MmuVariable &operator=(MmuVariable &&) = delete;
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::channel::maxChannels>
+template<Index I>
+  requires ValidIndex<I, cu::channel::maxChannels>
 struct ChannelGreenWalkStatus : MmuVariable<Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::channel::maxChannels>
+template<Index I>
+  requires ValidIndex<I, cu::channel::maxChannels>
 struct ChannelRedDoNotWalkStatus : MmuVariable<Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::channel::maxChannels>
+template<Index I>
+  requires ValidIndex<I, cu::channel::maxChannels>
 struct ChannelYellowPedClearStatus : MmuVariable<Bit, I>
 {
 };
@@ -1927,8 +1925,8 @@ struct FYAFlashRateFailure : MmuVariable<Bit>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::channel::maxChannels>
+template<Index I>
+  requires ValidIndex<I, cu::channel::maxChannels>
 struct MinimumYellowChangeDisable : MmuVariable<Bit, I>
 {
 };
@@ -1964,26 +1962,26 @@ struct CVMFaultMonitorLatch : MmuVariable<Bit>
  * @remarks The two channel IDs are encoded as the index. index : left-hand-side channel as high-byte,
  * right-hand-size channel as low-byte
  */
-template<Index Ix, Index Iy> /* */
-requires ValidIndex<Ix, cu::channel::maxChannels> && ValidIndex<Iy, cu::channel::maxChannels> && (Ix < Iy)
+template<Index Ix, Index Iy>
+  requires ValidIndex<Ix, cu::channel::maxChannels> && ValidIndex<Iy, cu::channel::maxChannels> && (Ix < Iy)
 struct ChannelCompatibilityStatus : MmuVariable<Bit, (Ix << 8) | Iy>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::channel::maxChannels>
+template<Index I>
+  requires ValidIndex<I, cu::channel::maxChannels>
 struct ChannelGreenWalkDriver : MmuVariable<Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::channel::maxChannels>
+template<Index I>
+  requires ValidIndex<I, cu::channel::maxChannels>
 struct ChannelRedDoNotWalkDriver : MmuVariable<Bit, I>
 {
 };
 
-template<Index I> /* */
-requires ValidIndex<I, cu::channel::maxChannels>
+template<Index I>
+  requires ValidIndex<I, cu::channel::maxChannels>
 struct ChannelYellowPedClearDriver : MmuVariable<Bit, I>
 {
 };
@@ -1992,8 +1990,7 @@ struct LoadSwitchFlash : MmuVariable<Bit>
 {
 };
 
-template<typename T> /* */
-requires ValidMmuVariable<T>
+template<ValidMmuVariable T>
 T variable{};
 
 /*!
@@ -2004,7 +2001,7 @@ T variable{};
  * @return The size of the compatibility set of the given channel.
  */
 template<size_t Channel, size_t MaxChannel>
-requires ((Channel >= 1) && (Channel <= MaxChannel))
+  requires((Channel >= 1) && (Channel <= MaxChannel))
 constexpr size_t ChannelSegmentSize()
 {
   return (MaxChannel - Channel);
@@ -2020,7 +2017,7 @@ constexpr size_t ChannelSegmentSize()
  * bytes in the stream describing the channel's compatibility.
  */
 template<size_t Channel, size_t MaxChannel = 16>
-requires ((Channel >= 1) && (Channel <= MaxChannel))
+  requires((Channel >= 1) && (Channel <= MaxChannel))
 constexpr size_t ChannelSegmentStartPos()
 {
   if constexpr (Channel == 1) {
@@ -2060,9 +2057,9 @@ constexpr size_t ChannelSegmentStartPos()
  * For example, if ChannelID = 1, this will generate 2, ..., MaxChannel
  *                 ChannelID = 2, this will generate 3, ..., MaxChannel
 */
-template<Index ChannelID, Index MaxChannel = 16> requires (ChannelID >= 1) &&(ChannelID<MaxChannel)
-using ChannelCompatibilityPairedIndexes
-    = offset_sequence_t<ChannelID, std::make_integer_sequence<Index, MaxChannel - ChannelID>>;
+template<Index ChannelID, Index MaxChannel = 16>
+  requires(ChannelID >= 1) && (ChannelID < MaxChannel)
+using ChannelCompatibilityPairedIndexes = offset_sequence_t<ChannelID, std::make_integer_sequence<Index, MaxChannel - ChannelID>>;
 
 namespace impl {
 /*!
@@ -2079,8 +2076,7 @@ void SetMMU16ChannelCompatibility(const std::bitset<0x78> &a_mmu16_comp,
                                   std::integer_sequence<Index, Ix, Iy, Iys...> a_seq)
 {
   // @formatter:off
-  mmu::variable<ChannelCompatibilityStatus<Ix, Iy>>.value
-      = static_cast<Bit>(a_mmu16_comp[ChannelSegmentStartPos<Ix>() + Iy - Ix - 1]);
+  mmu::variable<ChannelCompatibilityStatus<Ix, Iy>>.value = static_cast<Bit>(a_mmu16_comp[ChannelSegmentStartPos<Ix>() + Iy - Ix - 1]);
 
   if constexpr (a_seq.size() > 2) {
     return SetMMU16ChannelCompatibility(a_mmu16_comp, std::integer_sequence<Index, Ix, Iys...>{});
@@ -2104,8 +2100,7 @@ void GetMMU16ChannelCompatibility(std::bitset<0x78> &a_mmu16_comp,
                                   std::integer_sequence<Index, Ix, Iy, Iys...> a_seq)
 {
   // @formatter:off
-  a_mmu16_comp[ChannelSegmentStartPos<Ix>() + Iy - Ix - 1]
-      = (mmu::variable<ChannelCompatibilityStatus<Ix, Iy>>.value == Bit::On) ? 1 : 0;
+  a_mmu16_comp[ChannelSegmentStartPos<Ix>() + Iy - Ix - 1] = (mmu::variable<ChannelCompatibilityStatus<Ix, Iy>>.value == Bit::On) ? 1 : 0;
 
   if constexpr (a_seq.size() > 2) {
     return GetMMU16ChannelCompatibility(a_mmu16_comp,
@@ -2116,7 +2111,7 @@ void GetMMU16ChannelCompatibility(std::bitset<0x78> &a_mmu16_comp,
   // @formatter:on
 }
 
-} // end of namespace mmu::impl
+}// namespace impl
 
 /*!
  * Save MMU16 channel compatibility to internal mmu variables.
@@ -2130,7 +2125,7 @@ void SetMMU16ChannelCompatibility(const std::bitset<0x78> &a_mmu16_comp)
   if constexpr (Ix < 16) {
     using T = typename add_sequence_front<Ix, ChannelCompatibilityPairedIndexes<Ix>>::type;
     impl::SetMMU16ChannelCompatibility(a_mmu16_comp, T{});
-    return SetMMU16ChannelCompatibility<Ix+1>(a_mmu16_comp);
+    return SetMMU16ChannelCompatibility<Ix + 1>(a_mmu16_comp);
   } else {
     return;
   }
@@ -2149,7 +2144,7 @@ void GetMMU16ChannelCompatibility(std::bitset<0x78> &a_mmu16_comp)
   if constexpr (Ix < 16) {
     using T = typename add_sequence_front<Ix, ChannelCompatibilityPairedIndexes<Ix>>::type;
     impl::GetMMU16ChannelCompatibility(a_mmu16_comp, T{});
-    return GetMMU16ChannelCompatibility<Ix+1>(a_mmu16_comp);
+    return GetMMU16ChannelCompatibility<Ix + 1>(a_mmu16_comp);
   } else {
     return;
   }
@@ -2198,21 +2193,21 @@ void SetDefaultMMU16ChannelCompatibility()
   std::bitset<0x78> mmu16_comp_def{
       // @formatter:off
       /*    23456789ABCDEFG */
-      /*1*/"000110000100000"
-      /*2*/ "00110010100000"
-      /*3*/  "0001100010000"
-      /*4*/   "001101010000"
-      /*5*/    "00010000000"
-      /*6*/     "0010100000"
-      /*7*/      "001000000"
-      /*8*/       "01010000"
-      /*9*/        "0100000"
-      /*A*/         "010000"
-      /*B*/          "00000"
-      /*C*/           "0000"
-      /*D*/            "000"
-      /*E*/             "00"
-      /*F*/              "0"
+      /*1*/ "000110000100000"
+            /*2*/ "00110010100000"
+            /*3*/ "0001100010000"
+            /*4*/ "001101010000"
+            /*5*/ "00010000000"
+            /*6*/ "0010100000"
+            /*7*/ "001000000"
+            /*8*/ "01010000"
+            /*9*/ "0100000"
+            /*A*/ "010000"
+            /*B*/ "00000"
+            /*C*/ "0000"
+            /*D*/ "000"
+            /*E*/ "00"
+            /*F*/ "0"
       // @formatter:on
   };
   // The bitset needs to be reversed, so the least significant bit
@@ -2234,52 +2229,52 @@ void SetMMU16ChannelCompatibility(const std::string &a_hexstr)
   std::string bitstr{};
   for (auto &c : a_hexstr) {
     switch (std::toupper(c)) {
-      case '0':/* */
+      case '0':
         bitstr.append("0000");
         break;
-      case '1':/* */
+      case '1':
         bitstr.append("0001");
         break;
-      case '2':/* */
+      case '2':
         bitstr.append("0010");
         break;
-      case '3':/* */
+      case '3':
         bitstr.append("0011");
         break;
-      case '4':/* */
+      case '4':
         bitstr.append("0100");
         break;
-      case '5':/* */
+      case '5':
         bitstr.append("0101");
         break;
-      case '6':/* */
+      case '6':
         bitstr.append("0110");
         break;
-      case '7':/* */
+      case '7':
         bitstr.append("0111");
         break;
-      case '8':/* */
+      case '8':
         bitstr.append("1000");
         break;
-      case '9':/* */
+      case '9':
         bitstr.append("1001");
         break;
-      case 'A':/* */
+      case 'A':
         bitstr.append("1010");
         break;
-      case 'B':/* */
+      case 'B':
         bitstr.append("1011");
         break;
-      case 'C':/* */
+      case 'C':
         bitstr.append("1100");
         break;
-      case 'D':/* */
+      case 'D':
         bitstr.append("1101");
         break;
-      case 'E':/* */
+      case 'E':
         bitstr.append("1110");
         break;
-      case 'F':/* */
+      case 'F':
         bitstr.append("1111");
         break;
     }
@@ -2288,7 +2283,7 @@ void SetMMU16ChannelCompatibility(const std::string &a_hexstr)
   SetMMU16ChannelCompatibility(comp);
 }
 
-} // end of namespace vtc::mmu
+}// namespace mmu
 
 namespace broadcast {
 
@@ -2339,52 +2334,48 @@ struct CuReportedTenthsOfSeconds : BroadcastVariable<Byte>
 {
 };
 
-template<Index I> requires ValidIndex<I, biu::max_tf_bius>
+template<Index I>
+  requires ValidIndex<I, biu::max_tf_bius>
 struct CuReportedTfBiuPresence : BroadcastVariable<Bit, I>
 {
 };
 
-template<Index I> requires ValidIndex<I, biu::max_det_bius>
+template<Index I>
+  requires ValidIndex<I, biu::max_det_bius>
 struct CuReportedDrBiuPresence : BroadcastVariable<Bit, I>
 {
 };
 
-template<typename T> /* */
-requires ValidBroadcastVariable<T>
+template<ValidBroadcastVariable T>
 T variable{};
 
-} // end of namespace vtc::broadcast
+}// namespace broadcast
 
-template<typename T>
-requires broadcast::ValidBroadcastVariable<T>
+template<broadcast::ValidBroadcastVariable T>
 constexpr T &variable()
 {
   return broadcast::variable<T>;
 }
 
-template<typename T>
-requires cu::ValidCuVariable<T>
+template<cu::ValidCuVariable T>
 constexpr T &variable()
 {
   return cu::variable<T>;
 }
 
-template<typename T>
-requires mmu::ValidMmuVariable<T>
+template<mmu::ValidMmuVariable T>
 constexpr T &variable()
 {
   return mmu::variable<T>;
 }
 
-template<typename T>
-requires io::ValidIoVariable<T>
+template<io::ValidIoVariable T>
 constexpr T &variable()
 {
   return io::variable<T>;
 }
 
-template<typename T>
-requires biu::ValidBiuVariable<T>
+template<biu::ValidBiuVariable T>
 constexpr T &variable()
 {
   return biu::variable<T>;
@@ -2397,7 +2388,7 @@ namespace serial {
  * Reserved bits will be set to low. Spare bits are vendor specific, but since
  * we don't deal with vendor specific features, spare bits will also be set to 0.
  */
-constexpr int max_sdlc_frame_bytesize = 64; // max byte size = 64 byte
+constexpr int max_sdlc_frame_bytesize = 64;// max byte size = 64 byte
 
 namespace {
 
@@ -2405,7 +2396,8 @@ struct FrameElementType
 {
 };
 
-template<typename T, size_t BitPos> requires std::is_same_v<ValueType<T>, Bit>
+template<typename T, size_t BitPos>
+  requires std::is_same_v<ValueType<T>, Bit>
 struct FrameBit
 {
   using type = FrameElementType;
@@ -2430,7 +2422,8 @@ struct FrameBit
   T &ref_var{variable<T>()};
 };
 
-template<typename T, size_t BytePos> requires std::is_same_v<ValueType<T>, Byte>
+template<typename T, size_t BytePos>
+  requires std::is_same_v<ValueType<T>, Byte>
 struct FrameByte
 {
   using type = FrameElementType;
@@ -2449,21 +2442,21 @@ struct FrameByte
   T &ref_var{variable<T>()};
 };
 
-template<typename T, size_t BytePos>/* BytePos: position of Word value low byte */
-requires std::is_same_v<ValueType<T>, Word>
+template<typename T, size_t BytePos> /* BytePos: position of Word value low byte */
+  requires std::is_same_v<ValueType<T>, Word>
 struct FrameWord
 {
   using type = FrameElementType;
 
   void operator<<(const std::span<const Byte> a_data_in)
   {
-    ref_var.value = (a_data_in[pos] & 0x00FF) | (a_data_in[pos + 1] << 8); // LByte | HByte
+    ref_var.value = (a_data_in[pos] & 0x00FF) | (a_data_in[pos + 1] << 8);// LByte | HByte
   }
 
   void operator>>(const std::span<Byte> a_data_out)
   {
-    a_data_out[pos] = ref_var.value & 0x00FF; // LByte
-    a_data_out[pos + 1] = ref_var.value >> 8; // HByte
+    a_data_out[pos] = ref_var.value & 0x00FF;// LByte
+    a_data_out[pos + 1] = ref_var.value >> 8;// HByte
   }
 
   size_t pos{BytePos};
@@ -2504,9 +2497,8 @@ concept ValidFrameByteSize = (N >= 1) && (N <= max_sdlc_frame_bytesize);
 template<typename T>
 concept ValidFrameElement = std::is_same_v<typename T::type, FrameElementType>;
 
-template<size_t ByteSize, typename T, typename ...Ts>
-concept ValidFrame = (ValidPrimaryStationFrame<T> || ValidSecondaryStationFrame<T>)
-    && (ValidFrameElement<Ts> &&...)
+template<size_t ByteSize, typename T, typename... Ts>
+concept ValidFrame = (ValidPrimaryStationFrame<T> || ValidSecondaryStationFrame<T>)&&(ValidFrameElement<Ts> && ...)
     && ValidFrameByteSize<ByteSize>;
 
 template<typename T>
@@ -2522,8 +2514,8 @@ template<
     Byte FrameID,
     size_t FrameByteSize,
     typename T,
-    typename ...Ts
-> requires ValidFrame<FrameByteSize, T, Ts...>
+    typename... Ts>
+  requires ValidFrame<FrameByteSize, T, Ts...>
 class Frame
 {
 public:
@@ -2536,7 +2528,7 @@ public:
   Frame &operator=(Frame &&) = delete;
 
   template<typename = T>
-  requires ReceivableFrame<T>
+    requires ReceivableFrame<T>
   void operator<<(const std::span<const Byte> a_data_in)
   {
     // [0]: Address; [1]: SDLC control code 0x83; [2]: FrameID.
@@ -2548,7 +2540,7 @@ public:
   }
 
   template<typename = T>
-  requires GenerativeFrame<T>
+    requires GenerativeFrame<T>
   void operator>>(std::span<Byte> a_data_out)
   {
     std::fill(a_data_out.begin(), a_data_out.end(), 0);
@@ -2561,6 +2553,7 @@ public:
   static constexpr Byte address{Address};
   static constexpr Byte id{FrameID};
   static constexpr size_t bytesize{FrameByteSize};
+
 private:
   template<size_t I = 0>
   inline void Assign(const std::span<const Byte> a_data_in)
@@ -2568,7 +2561,7 @@ private:
     if constexpr (I < sizeof...(Ts)) {
       std::get<I>(m_frame_elements) << a_data_in;
       //@formatter:off
-      Assign<I+1>(a_data_in);
+      Assign<I + 1>(a_data_in);
       //@formatter:on
     }
   }
@@ -2579,7 +2572,7 @@ private:
     if constexpr (I < sizeof...(Ts)) {
       std::get<I>(m_frame_elements) >> a_data_out;
       //@formatter:off
-      Generate<I+1>(a_data_out);
+      Generate<I + 1>(a_data_out);
       //@formatter:on
     }
   }
@@ -2587,7 +2580,7 @@ private:
   std::tuple<Ts...> m_frame_elements;
 };
 
-} // end of namespace anonymous
+}// namespace
 
 template<Byte FrameID>
 struct FrameType
@@ -2613,11 +2606,10 @@ struct FrameType
    a state of either 00 (OFF) or 11 (ON), ignoring dimming,
    which is obsolete for modern traffic controllers.
  */
-using LoadSwitchDriversFrame
-    = Frame<
-    0x10, // MMU Address = 16
-    0x00, // FrameID = 0
-    16,   // Total number of bytes of the frame.
+using LoadSwitchDriversFrame = Frame<
+    0x10,// MMU Address = 16
+    0x00,// FrameID = 0
+    16,  // Total number of bytes of the frame.
     SSR_CommandFrameType,
     // ----------------------------------------------
     // Byte 0 - Address, 0x10 for MMU
@@ -2740,8 +2732,7 @@ using LoadSwitchDriversFrame
     // ----------------------------------------------
     // Byte 15 : Bit 0x78 ~ 0x7E are reserved bits.
     // ----------------------------------------------
-    FrameBit<mmu::LoadSwitchFlash, 0x7F>
->;
+    FrameBit<mmu::LoadSwitchFlash, 0x7F>>;
 
 template<>
 struct FrameType<0>
@@ -2752,13 +2743,11 @@ struct FrameType<0>
 // ----------------------------------------------
 // Frame Type 1
 // ----------------------------------------------
-using MMUInputStatusRequestFrame
-    = Frame<
-    0x10, // MMU Address = 16
-    0x01, // FrameID = 1
+using MMUInputStatusRequestFrame = Frame<
+    0x10,// MMU Address = 16
+    0x01,// FrameID = 1
     3,
-    SSR_CommandFrameType
->;
+    SSR_CommandFrameType>;
 
 template<>
 struct FrameType<1>
@@ -2770,13 +2759,11 @@ struct FrameType<1>
 // Frame Type 3
 // ----------------------------------------------
 
-using MMUProgrammingRequestFrame
-    = Frame<
-    0x10, // MMU Address = 16
-    0x03, // FrameID = 3
+using MMUProgrammingRequestFrame = Frame<
+    0x10,// MMU Address = 16
+    0x03,// FrameID = 3
     3,
-    SSR_CommandFrameType
->;
+    SSR_CommandFrameType>;
 
 template<>
 struct FrameType<3>
@@ -2787,11 +2774,10 @@ struct FrameType<3>
 // ----------------------------------------------
 // Frame Type 9
 // ----------------------------------------------
-using DateTimeBroadcastFrame
-    = Frame<
-    0xFF, // Broadcast Address = 255
-    0x09, // FrameID = 9
-    12,   // 12 Bytes
+using DateTimeBroadcastFrame = Frame<
+    0xFF,// Broadcast Address = 255
+    0x09,// FrameID = 9
+    12,  // 12 Bytes
     SSR_CommandFrameType,
     // ----------------------------------------------
     // Byte 0 - Address, 0xFF for broadcast message
@@ -2828,8 +2814,7 @@ using DateTimeBroadcastFrame
     FrameBit<broadcast::CuReportedDrBiuPresence<0x05>, 0x5C>,
     FrameBit<broadcast::CuReportedDrBiuPresence<0x06>, 0x5D>,
     FrameBit<broadcast::CuReportedDrBiuPresence<0x07>, 0x5E>,
-    FrameBit<broadcast::CuReportedDrBiuPresence<0x08>, 0x5F>
->;
+    FrameBit<broadcast::CuReportedDrBiuPresence<0x08>, 0x5F>>;
 
 template<>
 struct FrameType<9>
@@ -2840,11 +2825,10 @@ struct FrameType<9>
 // ----------------------------------------------
 // Frame Type 10
 // ----------------------------------------------
-using TfBiu01_OutputsInputsRequestFrame
-    = Frame<
-    0x00, // TF BIU#1 Address = 0
-    0x0A, // FrameID = 10
-    11,   // 11 Bytes
+using TfBiu01_OutputsInputsRequestFrame = Frame<
+    0x00,// TF BIU#1 Address = 0
+    0x0A,// FrameID = 10
+    11,  // 11 Bytes
     SSR_CommandFrameType,
     // ----------------------------------------------
     // Byte 3
@@ -2925,7 +2909,7 @@ using TfBiu01_OutputsInputsRequestFrame
     // ----------------------------------------------
     // Bit 0x50 - 0x56 designated as inputs, should be driven to logic 0 all times.
     // Bit 0x57 Reserved.
->;
+    >;
 
 template<>
 struct FrameType<10>
@@ -2936,11 +2920,10 @@ struct FrameType<10>
 // ----------------------------------------------
 // Frame Type 11
 // ----------------------------------------------
-using TfBiu02_OutputsInputsRequestFrame
-    = Frame<
-    0x01, // TF BIU#2 Address = 1
-    0x0B, // FrameID = 11
-    11,   // 11 Bytes
+using TfBiu02_OutputsInputsRequestFrame = Frame<
+    0x01,// TF BIU#2 Address = 1
+    0x0B,// FrameID = 11
+    11,  // 11 Bytes
     SSR_CommandFrameType,
     // ----------------------------------------------
     // Byte 3
@@ -3024,7 +3007,7 @@ using TfBiu02_OutputsInputsRequestFrame
     // Bit 0x50 - 0x52 designated as inputs, should be driven to logic 0 all times.
     // Bit 0x53 - 0x56 Spare, vendor specific (logic 0 or 1).
     // Bit 0x57 - Reserved.
->;
+    >;
 
 template<>
 struct FrameType<11>
@@ -3035,11 +3018,10 @@ struct FrameType<11>
 // ----------------------------------------------
 // Frame Type 12
 // ----------------------------------------------
-using TfBiu03_OutputsInputsRequestFrame
-    = Frame<
-    0x02, // TF BIU#1 Address = 2
-    0x0C, // FrameID = 12
-    8,    // 8 Bytes
+using TfBiu03_OutputsInputsRequestFrame = Frame<
+    0x02,// TF BIU#1 Address = 2
+    0x0C,// FrameID = 12
+    8,   // 8 Bytes
     SSR_CommandFrameType,
     // ----------------------------------------------
     // Byte 3
@@ -3096,7 +3078,7 @@ using TfBiu03_OutputsInputsRequestFrame
     // 0x3D - Designated Input
     // 0x3E - Designated Input
     // 0x3F - Designated Input
->;
+    >;
 
 template<>
 struct FrameType<12>
@@ -3107,11 +3089,10 @@ struct FrameType<12>
 // ----------------------------------------------
 // Frame Type 13
 // ----------------------------------------------
-using TfBiu04_OutputsInputsRequestFrame
-    = Frame<
-    0x03, // TF BIU#1 Address = 3
-    0x0D, // FrameID = 13
-    8,    // 8 Bytes
+using TfBiu04_OutputsInputsRequestFrame = Frame<
+    0x03,// TF BIU#1 Address = 3
+    0x0D,// FrameID = 13
+    8,   // 8 Bytes
     SSR_CommandFrameType,
     // ----------------------------------------------
     // Byte 3
@@ -3168,7 +3149,7 @@ using TfBiu04_OutputsInputsRequestFrame
     // 0x3D - Designated Input
     // 0x3E - Designated Input
     // 0x3F - Designated Input
->;
+    >;
 
 template<>
 struct FrameType<13>
@@ -3179,13 +3160,11 @@ struct FrameType<13>
 // ----------------------------------------------
 // Frame Type 18
 // ----------------------------------------------
-using OutputTransferFrame
-    = Frame<
-    0xFF, // Broadcast address 255
-    0x12, // FrameID = 18
+using OutputTransferFrame = Frame<
+    0xFF,// Broadcast address 255
+    0x12,// FrameID = 18
     3,
-    SSR_CommandFrameType
->;
+    SSR_CommandFrameType>;
 
 template<>
 struct FrameType<18>
@@ -3196,13 +3175,11 @@ struct FrameType<18>
 // ----------------------------------------------
 // Frame Type 20
 // ----------------------------------------------
-using DrBiu01_CallRequestFrame
-    = Frame<
-    0x08, // DET BIU#1 Address = 8
-    0x14, // FrameID = 20
+using DrBiu01_CallRequestFrame = Frame<
+    0x08,// DET BIU#1 Address = 8
+    0x14,// FrameID = 20
     3,
-    SSR_CommandFrameType
->;
+    SSR_CommandFrameType>;
 
 template<>
 struct FrameType<20>
@@ -3213,13 +3190,11 @@ struct FrameType<20>
 // ----------------------------------------------
 // Frame Type 21
 // ----------------------------------------------
-using DrBiu02_CallRequestFrame
-    = Frame<
-    0x09, // DET BIU#2 Address = 9
-    0x15, // FrameID = 21
+using DrBiu02_CallRequestFrame = Frame<
+    0x09,// DET BIU#2 Address = 9
+    0x15,// FrameID = 21
     3,
-    SSR_CommandFrameType
->;
+    SSR_CommandFrameType>;
 
 template<>
 struct FrameType<21>
@@ -3230,13 +3205,11 @@ struct FrameType<21>
 // ----------------------------------------------
 // Frame Type 22
 // ----------------------------------------------
-using DrBiu03_CallRequestFrame
-    = Frame<
-    0x0A, // DET BIU#3 Address = 10
-    0x16, // FrameID = 22
+using DrBiu03_CallRequestFrame = Frame<
+    0x0A,// DET BIU#3 Address = 10
+    0x16,// FrameID = 22
     3,
-    SSR_CommandFrameType
->;
+    SSR_CommandFrameType>;
 
 template<>
 struct FrameType<22>
@@ -3247,13 +3220,11 @@ struct FrameType<22>
 // ----------------------------------------------
 // Frame Type 23
 // ----------------------------------------------
-using DrBiu04_CallRequestFrame
-    = Frame<
-    0x0B, // DET BIU#3 Address = 1
-    0x17, // FrameID = 23
+using DrBiu04_CallRequestFrame = Frame<
+    0x0B,// DET BIU#3 Address = 1
+    0x17,// FrameID = 23
     3,
-    SSR_CommandFrameType
->;
+    SSR_CommandFrameType>;
 
 template<>
 struct FrameType<23>
@@ -3264,14 +3235,12 @@ struct FrameType<23>
 // ----------------------------------------------
 // Frame Type 24
 // ----------------------------------------------
-using DrBiu01_ResetDiagnosticRequestFrame
-    = Frame<
-    0x08, // DET BIU#1 Address = 8
-    0x18, // FrameID = 24
+using DrBiu01_ResetDiagnosticRequestFrame = Frame<
+    0x08,// DET BIU#1 Address = 8
+    0x18,// FrameID = 24
     4,
     SSR_CommandFrameType,
-    FrameByte<io::output::DetectorReset<1>, 3>
->;
+    FrameByte<io::output::DetectorReset<1>, 3>>;
 
 template<>
 struct FrameType<24>
@@ -3282,14 +3251,12 @@ struct FrameType<24>
 // ----------------------------------------------
 // Frame Type 25
 // ----------------------------------------------
-using DrBiu02_ResetDiagnosticRequestFrame
-    = Frame<
-    0x09, // DET BIU#2 Address = 9
-    0x19, // FrameID = 25
+using DrBiu02_ResetDiagnosticRequestFrame = Frame<
+    0x09,// DET BIU#2 Address = 9
+    0x19,// FrameID = 25
     4,
     SSR_CommandFrameType,
-    FrameByte<io::output::DetectorReset<2>, 3>
->;
+    FrameByte<io::output::DetectorReset<2>, 3>>;
 
 template<>
 struct FrameType<25>
@@ -3300,14 +3267,12 @@ struct FrameType<25>
 // ----------------------------------------------
 // Frame Type 26
 // ----------------------------------------------
-using DrBiu03_ResetDiagnosticRequestFrame
-    = Frame<
-    0x0A, // DET BIU#3 Address = 10
-    0x1A, // FrameID = 26
+using DrBiu03_ResetDiagnosticRequestFrame = Frame<
+    0x0A,// DET BIU#3 Address = 10
+    0x1A,// FrameID = 26
     4,
     SSR_CommandFrameType,
-    FrameByte<io::output::DetectorReset<3>, 3>
->;
+    FrameByte<io::output::DetectorReset<3>, 3>>;
 
 template<>
 struct FrameType<26>
@@ -3318,14 +3283,12 @@ struct FrameType<26>
 // ----------------------------------------------
 // Frame Type 27
 // ----------------------------------------------
-using DrBiu04_ResetDiagnosticRequestFrame
-    = Frame<
-    0x0B, // DET BIU#3 Address = 1
-    0x1B, // FrameID = 27
+using DrBiu04_ResetDiagnosticRequestFrame = Frame<
+    0x0B,// DET BIU#3 Address = 1
+    0x1B,// FrameID = 27
     4,
     SSR_CommandFrameType,
-    FrameByte<io::output::DetectorReset<4>, 3>
->;
+    FrameByte<io::output::DetectorReset<4>, 3>>;
 
 template<>
 struct FrameType<27>
@@ -3340,13 +3303,11 @@ struct FrameType<27>
 // ----------------------------------------------
 // Frame Type 128
 // ----------------------------------------------
-using LoadSwitchDriversAckFrame
-    = Frame<
-    0x10, // MMU Address = 16
-    0x80, // FrameID = 128, Type 0 ACK
+using LoadSwitchDriversAckFrame = Frame<
+    0x10,// MMU Address = 16
+    0x80,// FrameID = 128, Type 0 ACK
     3,
-    SSG_ResponseFrameType
->;
+    SSG_ResponseFrameType>;
 
 template<>
 struct FrameType<128>
@@ -3357,10 +3318,9 @@ struct FrameType<128>
 // ----------------------------------------------
 // Frame Type 129
 // ----------------------------------------------
-using MMUInputStatusRequestAckFrame
-    = Frame<
-    0x10, // MMU Address = 16
-    0x81, // FrameID = 129
+using MMUInputStatusRequestAckFrame = Frame<
+    0x10,// MMU Address = 16
+    0x81,// FrameID = 129
     13,
     SSG_ResponseFrameType,
     // ----------------------------------------------
@@ -3477,7 +3437,7 @@ using MMUInputStatusRequestAckFrame
     //  0x65 Reserved
     //  0x66 Reserved
     //  0x67 Reserved
->;
+    >;
 
 template<>
 struct FrameType<129>
@@ -3488,10 +3448,9 @@ struct FrameType<129>
 // ----------------------------------------------
 // Frame Type 131
 // ----------------------------------------------
-using MMUProgrammingRequestAckFrame
-    = Frame<
-    0x10, // MMU Address = 16
-    0x83, // FrameID = 131
+using MMUProgrammingRequestAckFrame = Frame<
+    0x10,// MMU Address = 16
+    0x83,// FrameID = 131
     23,
     SSG_ResponseFrameType,
     // ----------------------------------------------
@@ -3702,7 +3661,7 @@ using MMUProgrammingRequestAckFrame
     // ----------------------------------------------
     // Byte 22 - Reserved
     // ----------------------------------------------
->;
+    >;
 
 template<>
 struct FrameType<131>
@@ -3713,10 +3672,9 @@ struct FrameType<131>
 // ----------------------------------------------
 // Frame Type 138
 // ----------------------------------------------
-using TfBiu01_InputFrame
-    = Frame<
-    0x00, // TF BIU#1 Address = 0
-    0x8A, // FrameID = 138
+using TfBiu01_InputFrame = Frame<
+    0x00,// TF BIU#1 Address = 0
+    0x8A,// FrameID = 138
     8,
     SSG_ResponseFrameType,
     // ----------------------------------------------
@@ -3778,7 +3736,7 @@ using TfBiu01_InputFrame
     // 0x3D - Reserved
     // 0x3E - Reserved
     // 0x3F - Reserved
->;
+    >;
 
 template<>
 struct FrameType<138>
@@ -3789,10 +3747,9 @@ struct FrameType<138>
 // ----------------------------------------------
 // Frame Type 139
 // ----------------------------------------------
-using TfBiu02_InputFrame
-    = Frame<
-    0x01, // TF BIU#2 Address = 1
-    0x8B, // FrameID = 139
+using TfBiu02_InputFrame = Frame<
+    0x01,// TF BIU#2 Address = 1
+    0x8B,// FrameID = 139
     8,
     SSG_ResponseFrameType,
     // ----------------------------------------------
@@ -3854,7 +3811,7 @@ using TfBiu02_InputFrame
     // 0x3D - Reserved
     // 0x3E - Reserved
     // 0x3F - Reserved
->;
+    >;
 
 template<>
 struct FrameType<139>
@@ -3865,10 +3822,9 @@ struct FrameType<139>
 // ----------------------------------------------
 // Frame Type 140
 // ----------------------------------------------
-using TfBiu03_InputFrame
-    = Frame<
-    0x02, // TF BIU#3 Address = 2
-    0x8C, // FrameID = 140
+using TfBiu03_InputFrame = Frame<
+    0x02,// TF BIU#3 Address = 2
+    0x8C,// FrameID = 140
     8,
     SSG_ResponseFrameType,
     // ----------------------------------------------
@@ -3930,7 +3886,7 @@ using TfBiu03_InputFrame
     // 0x3D - Reserved
     // 0x3E - Reserved
     // 0x3F - Reserved
->;
+    >;
 
 template<>
 struct FrameType<140>
@@ -3941,10 +3897,9 @@ struct FrameType<140>
 // ----------------------------------------------
 // Frame Type 141
 // ----------------------------------------------
-using TfBiu04_InputFrame
-    = Frame<
-    0x03, // TF BIU#4 Address = 3
-    0x8C, // FrameID = 141
+using TfBiu04_InputFrame = Frame<
+    0x03,// TF BIU#4 Address = 3
+    0x8C,// FrameID = 141
     8,
     SSG_ResponseFrameType,
     // ----------------------------------------------
@@ -4005,7 +3960,7 @@ using TfBiu04_InputFrame
     // 0x3D - Reserved
     // 0x3E - Reserved
     // 0x3F - Reserved
->;
+    >;
 
 template<>
 struct FrameType<141>
@@ -4051,10 +4006,9 @@ struct FrameType<141>
 // ----------------------------------------------
 // Frame Type 148
 // ----------------------------------------------
-using DrBiu01_CallDataFrame
-    = Frame<
-    0x08, // DR BIU#1 Address = 8
-    0x94, // FrameID = 148
+using DrBiu01_CallDataFrame = Frame<
+    0x08,// DR BIU#1 Address = 8
+    0x94,// FrameID = 148
     39,
     SSG_ResponseFrameType,
     // ----------------------------------------------
@@ -4069,7 +4023,7 @@ using DrBiu01_CallDataFrame
     //----------------------------------------------
     // Byte 35 - 36 Det 1 - Det 16 Call Status Bit 0
     //----------------------------------------------
-    FrameBit<io::input::VehicleDetCall<0x01>, 0x0118>, // Bit 280
+    FrameBit<io::input::VehicleDetCall<0x01>, 0x0118>,// Bit 280
     FrameBit<io::input::VehicleDetCall<0x02>, 0x0119>,
     FrameBit<io::input::VehicleDetCall<0x03>, 0x011A>,
     FrameBit<io::input::VehicleDetCall<0x04>, 0x011B>,
@@ -4084,8 +4038,8 @@ using DrBiu01_CallDataFrame
     FrameBit<io::input::VehicleDetCall<0x0D>, 0x0124>,
     FrameBit<io::input::VehicleDetCall<0x0E>, 0x0125>,
     FrameBit<io::input::VehicleDetCall<0x0F>, 0x0126>,
-    FrameBit<io::input::VehicleDetCall<0x10>, 0x0127>  // Bit 295
->;
+    FrameBit<io::input::VehicleDetCall<0x10>, 0x0127>// Bit 295
+    >;
 
 template<>
 struct FrameType<148>
@@ -4096,10 +4050,9 @@ struct FrameType<148>
 // ----------------------------------------------
 // Frame Type 149
 // ----------------------------------------------
-using DrBiu02_CallDataFrame
-    = Frame<
-    0x09, // DR BIU#2 Address = 9
-    0x95, // FrameID = 149
+using DrBiu02_CallDataFrame = Frame<
+    0x09,// DR BIU#2 Address = 9
+    0x95,// FrameID = 149
     39,
     SSG_ResponseFrameType,
     // ----------------------------------------------
@@ -4114,7 +4067,7 @@ using DrBiu02_CallDataFrame
     //----------------------------------------------
     // Byte 35 - 36 Det 17 - Det 32 Call Status Bit 0
     //----------------------------------------------
-    FrameBit<io::input::VehicleDetCall<0x11>, 0x0118>, // Bit 280
+    FrameBit<io::input::VehicleDetCall<0x11>, 0x0118>,// Bit 280
     FrameBit<io::input::VehicleDetCall<0x12>, 0x0119>,
     FrameBit<io::input::VehicleDetCall<0x13>, 0x011A>,
     FrameBit<io::input::VehicleDetCall<0x14>, 0x011B>,
@@ -4129,8 +4082,8 @@ using DrBiu02_CallDataFrame
     FrameBit<io::input::VehicleDetCall<0x1D>, 0x0124>,
     FrameBit<io::input::VehicleDetCall<0x1E>, 0x0125>,
     FrameBit<io::input::VehicleDetCall<0x1F>, 0x0126>,
-    FrameBit<io::input::VehicleDetCall<0x20>, 0x0127>  // Bit 295
->;
+    FrameBit<io::input::VehicleDetCall<0x20>, 0x0127>// Bit 295
+    >;
 
 template<>
 struct FrameType<149>
@@ -4141,10 +4094,9 @@ struct FrameType<149>
 // ----------------------------------------------
 // Frame Type 150
 // ----------------------------------------------
-using DrBiu03_CallDataFrame
-    = Frame<
-    0x0A, // DR BIU#3 Address = 10
-    0x96, // FrameID = 150
+using DrBiu03_CallDataFrame = Frame<
+    0x0A,// DR BIU#3 Address = 10
+    0x96,// FrameID = 150
     39,
     SSG_ResponseFrameType,
     // ----------------------------------------------
@@ -4159,7 +4111,7 @@ using DrBiu03_CallDataFrame
     //----------------------------------------------
     // Byte 35 - 36 Det 33 - Det 48 Call Status Bit 0
     //----------------------------------------------
-    FrameBit<io::input::VehicleDetCall<0x21>, 0x0118>, // Bit 280
+    FrameBit<io::input::VehicleDetCall<0x21>, 0x0118>,// Bit 280
     FrameBit<io::input::VehicleDetCall<0x22>, 0x0119>,
     FrameBit<io::input::VehicleDetCall<0x23>, 0x011A>,
     FrameBit<io::input::VehicleDetCall<0x24>, 0x011B>,
@@ -4174,8 +4126,8 @@ using DrBiu03_CallDataFrame
     FrameBit<io::input::VehicleDetCall<0x2D>, 0x0124>,
     FrameBit<io::input::VehicleDetCall<0x2E>, 0x0125>,
     FrameBit<io::input::VehicleDetCall<0x2F>, 0x0126>,
-    FrameBit<io::input::VehicleDetCall<0x30>, 0x0127> // Bit 295
->;
+    FrameBit<io::input::VehicleDetCall<0x30>, 0x0127>// Bit 295
+    >;
 
 template<>
 struct FrameType<150>
@@ -4186,10 +4138,9 @@ struct FrameType<150>
 // ----------------------------------------------
 // Frame Type 151
 // ----------------------------------------------
-using DrBiu04_CallDataFrame
-    = Frame<
-    0x0B, // DR BIU#4 Address = 11
-    0x97, // FrameID = 151
+using DrBiu04_CallDataFrame = Frame<
+    0x0B,// DR BIU#4 Address = 11
+    0x97,// FrameID = 151
     39,
     SSG_ResponseFrameType,
     // ----------------------------------------------
@@ -4204,7 +4155,7 @@ using DrBiu04_CallDataFrame
     //----------------------------------------------
     // Byte 35 - 36 Det 49 - Det 64 Call Status Bit 0
     //----------------------------------------------
-    FrameBit<io::input::VehicleDetCall<0x31>, 0x0118>, // Bit 280
+    FrameBit<io::input::VehicleDetCall<0x31>, 0x0118>,// Bit 280
     FrameBit<io::input::VehicleDetCall<0x32>, 0x0119>,
     FrameBit<io::input::VehicleDetCall<0x33>, 0x011A>,
     FrameBit<io::input::VehicleDetCall<0x34>, 0x011B>,
@@ -4219,8 +4170,8 @@ using DrBiu04_CallDataFrame
     FrameBit<io::input::VehicleDetCall<0x3D>, 0x0124>,
     FrameBit<io::input::VehicleDetCall<0x3E>, 0x0125>,
     FrameBit<io::input::VehicleDetCall<0x3F>, 0x0126>,
-    FrameBit<io::input::VehicleDetCall<0x40>, 0x0127> // Bit 295
->;
+    FrameBit<io::input::VehicleDetCall<0x40>, 0x0127>// Bit 295
+    >;
 
 template<>
 struct FrameType<151>
@@ -4231,10 +4182,9 @@ struct FrameType<151>
 // ----------------------------------------------
 // Frame Type 152
 // ----------------------------------------------
-using DrBiu01_DiagnosticFrame
-    = Frame<
-    0x08, // DR BIU#1 Address = 8
-    0x98, // FrameID = 152
+using DrBiu01_DiagnosticFrame = Frame<
+    0x08,// DR BIU#1 Address = 8
+    0x98,// FrameID = 152
     19,
     SSG_ResponseFrameType
 
@@ -4253,7 +4203,7 @@ using DrBiu01_DiagnosticFrame
        diagnostics is moot,  and we here simply set those
        bits to logical 0.
      * */
->;
+    >;
 
 template<>
 struct FrameType<152>
@@ -4264,10 +4214,9 @@ struct FrameType<152>
 // ----------------------------------------------
 // Frame Type 153
 // ----------------------------------------------
-using DrBiu02_DiagnosticFrame
-    = Frame<
-    0x09, // DR BIU#2 Address = 9
-    0x99, // FrameID = 153
+using DrBiu02_DiagnosticFrame = Frame<
+    0x09,// DR BIU#2 Address = 9
+    0x99,// FrameID = 153
     19,
     SSG_ResponseFrameType
 
@@ -4286,7 +4235,7 @@ using DrBiu02_DiagnosticFrame
        diagnostics is moot,  and we here simply set those
        bits to logical 0.
      * */
->;
+    >;
 
 template<>
 struct FrameType<153>
@@ -4297,10 +4246,9 @@ struct FrameType<153>
 // ----------------------------------------------
 // Frame Type 154
 // ----------------------------------------------
-using DrBiu03_DiagnosticFrame
-    = Frame<
-    0x0A, // DR BIU#3 Address = 10
-    0x9A, // FrameID = 154
+using DrBiu03_DiagnosticFrame = Frame<
+    0x0A,// DR BIU#3 Address = 10
+    0x9A,// FrameID = 154
     19,
     SSG_ResponseFrameType
 
@@ -4319,7 +4267,7 @@ using DrBiu03_DiagnosticFrame
        diagnostics is moot,  and we here simply set those
        bits to logical 0.
      * */
->;
+    >;
 
 template<>
 struct FrameType<154>
@@ -4330,10 +4278,9 @@ struct FrameType<154>
 // ----------------------------------------------
 // Frame Type 155
 // ----------------------------------------------
-using DrBiu04_DiagnosticFrame
-    = Frame<
-    0x0A, // DR BIU#4 Address = 10
-    0x9B, // FrameID = 155
+using DrBiu04_DiagnosticFrame = Frame<
+    0x0A,// DR BIU#4 Address = 10
+    0x9B,// FrameID = 155
     19,
     SSG_ResponseFrameType
 
@@ -4352,7 +4299,7 @@ using DrBiu04_DiagnosticFrame
        diagnostics is moot,  and we here simply set those
        bits to logical 0.
      * */
->;
+    >;
 
 template<>
 struct FrameType<155>
@@ -4366,7 +4313,7 @@ namespace {
 template<Byte CommandFrameID, Byte ResponseFrameID>
 using FrameMap = std::tuple<typename FrameType<CommandFrameID>::type, typename FrameType<ResponseFrameID>::type>;
 
-template<typename ...Ts>
+template<typename... Ts>
 using FrameMapsType = std::tuple<Ts...>;
 
 using FrameMaps = FrameMapsType<
@@ -4384,8 +4331,7 @@ using FrameMaps = FrameMapsType<
     FrameMap<0x18, 152>,
     FrameMap<0x19, 153>,
     FrameMap<0x1A, 154>,
-    FrameMap<0x1B, 155>
->;
+    FrameMap<0x1B, 155>>;
 
 /*!
  * Global map of SDLC command frame and response frame pair.
@@ -4398,7 +4344,7 @@ constexpr auto frame_maps_size = std::tuple_size_v<decltype(frame_maps)>;
  */
 std::array<Byte, max_sdlc_frame_bytesize> buffer = {0};
 
-} // end of namespace anonymous
+}// namespace
 
 template<size_t I = 0>
 std::tuple<bool, std::span<Byte>> Dispatch(std::span<const Byte> a_data_in)
@@ -4409,11 +4355,11 @@ std::tuple<bool, std::span<Byte>> Dispatch(std::span<const Byte> a_data_in)
 
     if (cmd_frame.id == a_data_in[2]) {
       cmd_frame << a_data_in;
-      res_frame >> serial::buffer; // Buffer will be emptied at the beginning of >>().
+      res_frame >> serial::buffer;// Buffer will be emptied at the beginning of >>().
       return {true, {serial::buffer.data(), res_frame.bytesize}};
     } else {
       // @formatter:off
-      return Dispatch<I+1>(a_data_in);
+      return Dispatch<I + 1>(a_data_in);
       // @formatter:on
     }
   } else {
@@ -4421,7 +4367,7 @@ std::tuple<bool, std::span<Byte>> Dispatch(std::span<const Byte> a_data_in)
   }
 }
 
-} // end of namespace vtc::serial
+}// namespace serial
 
 constexpr char hexmap[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
@@ -4436,24 +4382,24 @@ std::string BytesToHexStr(const unsigned char *a_data, size_t a_nbyte)
   return result;
 }
 
-} // end of namespace vtc
+}// end of namespace vtc
 
 namespace vtc::serial::device {
 
 enum class HdlcRxClkSource : uint16_t
 {
-  BRG = 0x0200,       /* RxClk generated by Baud Rate Generator internally. Need specify clock in param. */
-  DPLL = 0x0100,      /* RxClk recovered by Digital Phase-locked Loop from data signal. Need specify clock in param. */
-  RxClkPin = 0x0000,  /* RxClk supplied by external device on RxClk input pin. */
-  TxClkPin = 0x8000   /* RxClk supplied by external device on TxClk input pin. */
+  BRG = 0x0200,      /* RxClk generated by Baud Rate Generator internally. Need specify clock in param. */
+  DPLL = 0x0100,     /* RxClk recovered by Digital Phase-locked Loop from data signal. Need specify clock in param. */
+  RxClkPin = 0x0000, /* RxClk supplied by external device on RxClk input pin. */
+  TxClkPin = 0x8000  /* RxClk supplied by external device on TxClk input pin. */
 };
 
 enum class HdlcTxClkSource : uint16_t
 {
-  BRG = 0x0800,     /* TxClk generated by Baud Rate Generator internally. Need to specify clock in param. */
-  DPLL = 0x0400,    /* TxClk recovered by Digital Phase-locked Loop from data signal. Need to specify clock in param. */
-  RxClkPin = 0x0008,/* TxClk supplied by external device on RxC input pin. */
-  TxClkPin = 0x0000 /* TxClk supplied by external device on TxC input pin. */
+  BRG = 0x0800,      /* TxClk generated by Baud Rate Generator internally. Need to specify clock in param. */
+  DPLL = 0x0400,     /* TxClk recovered by Digital Phase-locked Loop from data signal. Need to specify clock in param. */
+  RxClkPin = 0x0008, /* TxClk supplied by external device on RxC input pin. */
+  TxClkPin = 0x0000  /* TxClk supplied by external device on TxC input pin. */
 };
 
 enum class HdlcCrcType : uint16_t
@@ -4563,18 +4509,18 @@ class SerialDevice
 #ifdef _WIN32
   using FuncPtr = FARPROC;
 #elif __linux__
-  using FuncPtr = void*;
+  using FuncPtr = void *;
 #endif
 
   class SerialApiModule
   {
   public:
-    SerialApiModule() noexcept: serialapi_{nullptr}
+    SerialApiModule() noexcept : serialapi_{nullptr}
     {
 #ifdef _WIN32
       lib_ = ::LoadLibraryA("vtcdev");
       ec_ = ::GetLastError();
-#elif  __linux__
+#elif __linux__
       lib_ = dlopen("vtcdev.so");
 #endif
       if (!lib_)
@@ -4593,7 +4539,7 @@ class SerialDevice
       if (lib_) {
 #ifdef _WIN32
         ::FreeLibrary(lib_);
-#elif  __linux__
+#elif __linux__
         dlclose(lib_);
 #endif
       }
@@ -4645,55 +4591,55 @@ class SerialDevice
 
     uint32_t cancel_reading(DeviceHandle a_dev)
     {
-      return ec_ = ((SimpleCommandFunc *) (serialapi_[0x00]))(a_dev);
+      return ec_ = ((SimpleCommandFunc *)(serialapi_[0x00]))(a_dev);
     }
 
     uint32_t cancel_writing(DeviceHandle a_dev)
     {
-      return ec_ = ((SimpleCommandFunc *) (serialapi_[0x01]))(a_dev);
+      return ec_ = ((SimpleCommandFunc *)(serialapi_[0x01]))(a_dev);
     }
 
     uint32_t read(DeviceHandle a_dev, std::span<uint8_t> a_buf)
     {
       // Note - we don't assign ec here, because read returns num of bytes read.
-      return ((IoFunc *) (serialapi_[0x08]))(a_dev, a_buf.data(), static_cast<int32_t>(a_buf.size()));
+      return ((IoFunc *)(serialapi_[0x08]))(a_dev, a_buf.data(), static_cast<int32_t>(a_buf.size()));
     }
 
     uint32_t write(DeviceHandle a_dev, const std::span<const uint8_t> a_buf)
     {
-      return ec_ = ((IoFunc *) (serialapi_[0x09]))(a_dev,
-                                                   const_cast<uint8_t *>(a_buf.data()),
-                                                   static_cast<int32_t>(a_buf.size()));
+      return ec_ = ((IoFunc *)(serialapi_[0x09]))(a_dev,
+                                                  const_cast<uint8_t *>(a_buf.data()),
+                                                  static_cast<int32_t>(a_buf.size()));
     }
 
     uint32_t open(const char *a_dev_name, DeviceHandle &a_dev)
     {
-      return ec_ = ((OpenFunc *) (serialapi_[0x07]))(const_cast<char *>(a_dev_name), &a_dev);
+      return ec_ = ((OpenFunc *)(serialapi_[0x07]))(const_cast<char *>(a_dev_name), &a_dev);
     }
 
     uint32_t close(DeviceHandle a_dev)
     {
-      return ec_ = ((SimpleCommandFunc *) (serialapi_[0x02]))(a_dev);
+      return ec_ = ((SimpleCommandFunc *)(serialapi_[0x02]))(a_dev);
     }
 
     uint32_t enable_read(DeviceHandle a_dev)
     {
-      return ec_ = ((SetValueFunc *) (serialapi_[0x03]))(a_dev, 1);
+      return ec_ = ((SetValueFunc *)(serialapi_[0x03]))(a_dev, 1);
     }
 
     uint32_t set_params(DeviceHandle a_dev, SerialDeviceParams &a_params)
     {
-      return ec_ = ((SetParamsFunc *) (serialapi_[0x04]))(a_dev, &a_params);
+      return ec_ = ((SetParamsFunc *)(serialapi_[0x04]))(a_dev, &a_params);
     }
 
     uint32_t set_idle_mode(DeviceHandle a_dev, HdlcIdleMode a_mode)
     {
-      return ec_ = ((SetValueFunc *) (serialapi_[0x05]))(a_dev, static_cast<int32_t>(a_mode));
+      return ec_ = ((SetValueFunc *)(serialapi_[0x05]))(a_dev, static_cast<int32_t>(a_mode));
     }
 
     uint32_t set_option(DeviceHandle a_dev, DeviceOptionTag a_opt_tag, int32_t a_opt_val)
     {
-      return ec_ = ((SetValueByIdFunc *) (serialapi_[0x06]))(a_dev, static_cast<uint32_t>(a_opt_tag), a_opt_val);
+      return ec_ = ((SetValueByIdFunc *)(serialapi_[0x06]))(a_dev, static_cast<uint32_t>(a_opt_tag), a_opt_val);
     }
 
     [[nodiscard]] uint32_t ec() const
@@ -4727,95 +4673,53 @@ class SerialDevice
 
     static constexpr std::array<std::array<char, 0x18>, 10> keys_ = {
         {
-            {
-                {
-                    0x4D, 0x67, 0x73, 0x6C, 0x43, 0x61, 0x6E, 0x63,
-                    0x65, 0x6C, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76,
-                    0x65, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-                }
-            } // 0x00: 0x02
+            {{0x4D, 0x67, 0x73, 0x6C, 0x43, 0x61, 0x6E, 0x63,
+              0x65, 0x6C, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76,
+              0x65, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}// 0x00: 0x02
             ,
-            {
-                {
-                    0x4D, 0x67, 0x73, 0x6C, 0x43, 0x61, 0x6E, 0x63,
-                    0x65, 0x6C, 0x54, 0x72, 0x61, 0x6E, 0x73, 0x6D,
-                    0x69, 0x74, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-                }
-            } // 0x01: 0x03
+            {{0x4D, 0x67, 0x73, 0x6C, 0x43, 0x61, 0x6E, 0x63,
+              0x65, 0x6C, 0x54, 0x72, 0x61, 0x6E, 0x73, 0x6D,
+              0x69, 0x74, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}// 0x01: 0x03
             ,
-            {
-                {
-                    0x4D, 0x67, 0x73, 0x6C, 0x43, 0x6C, 0x6F, 0x73,
-                    0x65, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-                }
-            } // 0x02: 0x05
+            {{0x4D, 0x67, 0x73, 0x6C, 0x43, 0x6C, 0x6F, 0x73,
+              0x65, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}// 0x02: 0x05
             ,
-            {
-                {
-                    0x4D, 0x67, 0x73, 0x6C, 0x45, 0x6E, 0x61, 0x62,
-                    0x6C, 0x65, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76,
-                    0x65, 0x72, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-                }
-            } // 0x03: 0x06
+            {{0x4D, 0x67, 0x73, 0x6C, 0x45, 0x6E, 0x61, 0x62,
+              0x6C, 0x65, 0x52, 0x65, 0x63, 0x65, 0x69, 0x76,
+              0x65, 0x72, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}// 0x03: 0x06
             ,
-            {
-                {
-                    0x4D, 0x67, 0x73, 0x6C, 0x53, 0x65, 0x74, 0x50,
-                    0x61, 0x72, 0x61, 0x6D, 0x73, 0x00, 0x00, 0x00,
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-                }
-            } // 0x04: 0x11
+            {{0x4D, 0x67, 0x73, 0x6C, 0x53, 0x65, 0x74, 0x50,
+              0x61, 0x72, 0x61, 0x6D, 0x73, 0x00, 0x00, 0x00,
+              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}// 0x04: 0x11
             ,
-            {
-                {
-                    0x4D, 0x67, 0x73, 0x6C, 0x53, 0x65, 0x74, 0x49,
-                    0x64, 0x6C, 0x65, 0x4D, 0x6F, 0x64, 0x65, 0x00,
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-                }
-            } // 0x05: 0x18
+            {{0x4D, 0x67, 0x73, 0x6C, 0x53, 0x65, 0x74, 0x49,
+              0x64, 0x6C, 0x65, 0x4D, 0x6F, 0x64, 0x65, 0x00,
+              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}// 0x05: 0x18
             ,
-            {
-                {
-                    0x4D, 0x67, 0x73, 0x6C, 0x53, 0x65, 0x74, 0x4F,
-                    0x70, 0x74, 0x69, 0x6F, 0x6E, 0x00, 0x00, 0x00,
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-                }
-            } // 0x06: 0x30
+            {{0x4D, 0x67, 0x73, 0x6C, 0x53, 0x65, 0x74, 0x4F,
+              0x70, 0x74, 0x69, 0x6F, 0x6E, 0x00, 0x00, 0x00,
+              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}// 0x06: 0x30
             ,
-            {
-                {
-                    0x4D, 0x67, 0x73, 0x6C, 0x4F, 0x70, 0x65, 0x6E,
-                    0x42, 0x79, 0x4E, 0x61, 0x6D, 0x65, 0x00, 0x00,
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-                }
-            } // 0x07: 0x38
+            {{0x4D, 0x67, 0x73, 0x6C, 0x4F, 0x70, 0x65, 0x6E,
+              0x42, 0x79, 0x4E, 0x61, 0x6D, 0x65, 0x00, 0x00,
+              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}// 0x07: 0x38
             ,
-            {
-                {
-                    0x4D, 0x67, 0x73, 0x6C, 0x52, 0x65, 0x61, 0x64,
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-                }
-            } // 0x08: 0x3B
+            {{0x4D, 0x67, 0x73, 0x6C, 0x52, 0x65, 0x61, 0x64,
+              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}// 0x08: 0x3B
             ,
-            {
-                {
-                    0x4D, 0x67, 0x73, 0x6C, 0x57, 0x72, 0x69, 0x74,
-                    0x65, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-                }
-            } // 0x09: 0x3C
-        }
-    };
+            {{0x4D, 0x67, 0x73, 0x6C, 0x57, 0x72, 0x69, 0x74,
+              0x65, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+              0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}}// 0x09: 0x3C
+        }};
 
     std::array<FuncPtr, keys_.size()> serialapi_{nullptr};
 
 #ifdef _WIN32
     HMODULE lib_{nullptr};
 #elif
-    __linux__
-    void* lib_{ nullptr };
+    __linux__ void *lib_{nullptr};
 #endif
 
     uint32_t ec_{0};
@@ -4919,7 +4823,7 @@ public:
   static std::string err_what()
   {
     if (apimodule_.ec() == 0) {
-      return std::string{}; // No error message has been recorded
+      return std::string{};// No error message has been recorded
     }
 
     LPSTR buf = nullptr;
@@ -4932,7 +4836,7 @@ public:
         nullptr,
         apimodule_.ec(),
         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPSTR) &buf,
+        (LPSTR)&buf,
         0,
         nullptr);
 
@@ -4979,8 +4883,7 @@ private:
 
 SerialDevice::SerialApiModule SerialDevice::apimodule_{};
 
-} // end of vtc::serial::device namespace
-
+}// namespace vtc::serial::device
 
 namespace vtc::hils {
 
@@ -5025,8 +4928,7 @@ using LoadswitchDriver =
     std::tuple<
         ChannelGreenWalkDriver<I> &,
         ChannelYellowPedClearDriver<I> &,
-        ChannelRedDoNotWalkDriver<I> &
-    >;
+        ChannelRedDoNotWalkDriver<I> &>;
 
 template<LoadswitchChannelID I>
 auto make_loadswitch_driver()
@@ -5037,8 +4939,8 @@ auto make_loadswitch_driver()
       std::ref(io::variable<ChannelRedDoNotWalkDriver<I>>));  /**/
 }
 
-template<LoadswitchChannelID I> requires (I <= num_loadswitches) &&(I
->= 1)
+template<LoadswitchChannelID I>
+  requires(I <= num_loadswitches) && (I >= 1)
 class LoadswitchChannel
 {
 public:
@@ -5049,8 +4951,7 @@ public:
         pattern | ds(Bit::On, Bit::Off, Bit::Off) = expr(LoadswitchChannelState::Green),
         pattern | ds(Bit::Off, Bit::On, Bit::Off) = expr(LoadswitchChannelState::Yellow),
         pattern | ds(Bit::Off, Bit::Off, Bit::On) = expr(LoadswitchChannelState::Red),
-        pattern | ds(_, _, _) /* Blank, or error? */ = expr(LoadswitchChannelState::Blank)
-    );
+        pattern | ds(_, _, _) /* Blank, or error? */ = expr(LoadswitchChannelState::Blank));
   }
 
   auto constexpr operator()() const noexcept
@@ -5062,8 +4963,8 @@ private:
   LoadswitchDriver<I> driver_{make_loadswitch_driver<I>()};
 };
 
-template<LoadswitchChannelID I> requires (I >= 1) &&(I
-<= num_loadswitches)
+template<LoadswitchChannelID I>
+  requires(I >= 1) && (I <= num_loadswitches)
 using LoadswitchWiring = std::tuple<LoadswitchChannel<I>, SignalHead>;
 
 struct LoadswitchWiringFactory
@@ -5071,7 +4972,7 @@ struct LoadswitchWiringFactory
   template<LoadswitchChannelID I>
   static auto make()
   {
-    return LoadswitchWiring < I > {};
+    return LoadswitchWiring<I>{};
   }
 };
 
@@ -5080,12 +4981,10 @@ using LoadswitchChannelIndexes =
         0,
         std::make_integer_sequence<
             LoadswitchChannelID,
-            num_loadswitches
-        >
-    >;
+            num_loadswitches>>;
 
-template<DetectorChannelID I> requires (I <= num_detector_channels) &&(I
->= 1)
+template<DetectorChannelID I>
+  requires(I <= num_detector_channels) && (I >= 1)
 class DetectorChannel
 {
 public:
@@ -5103,8 +5002,8 @@ private:
   VehicleDetCall<I> &state_{io::variable<io::input::VehicleDetCall<I>>};
 };
 
-template<DetectorChannelID I> requires (I <= num_detector_channels) &&(I
->= 1)
+template<DetectorChannelID I>
+  requires(I <= num_detector_channels) && (I >= 1)
 using DetectorWiring = std::tuple<DetectorChannel<I>, SensorIDs>;
 
 struct DetectorWiringFactory
@@ -5112,7 +5011,7 @@ struct DetectorWiringFactory
   template<DetectorChannelID I>
   static auto make()
   {
-    return DetectorWiring < I > {};
+    return DetectorWiring<I>{};
   }
 };
 
@@ -5121,11 +5020,9 @@ using DetectorChannelIndexes =
         0,
         std::make_integer_sequence<
             DetectorChannelID,
-            num_detector_channels
-        >
-    >;
+            num_detector_channels>>;
 
-template<typename WiringFactoryT, typename ChannelIDT, ChannelIDT ...Is>
+template<typename WiringFactoryT, typename ChannelIDT, ChannelIDT... Is>
 auto make_wirings(WiringFactoryT, ChannelIDT, std::integer_sequence<ChannelIDT, Is...>)
 {
   return std::make_tuple(decltype(WiringFactoryT::template make<Is>()){}...);
@@ -5166,11 +5063,10 @@ template<Wirings WiringsT, typename F>
 void for_each(WiringsT &&a_wirings, F &&a_func)
 {
   std::apply(
-      [&a_func]<typename ...T>(T &&...args) {
+      [&a_func]<typename... T>(T &&...args) {
         (a_func(std::forward<T>(args)), ...);
       },
-      std::forward<WiringsT>(a_wirings)
-  );
+      std::forward<WiringsT>(a_wirings));
 }
 
 #pragma clang diagnostic push
@@ -5306,8 +5202,8 @@ protected:
                 vtc::logger()->info("Response Frame {} Addr {}: {}", response_data[2], response_data[0], frame_str);
               }
             }
-          }
-      ).detach();
+          })
+          .detach();
     }
 
     return sdlc_enabled_;
@@ -5319,7 +5215,6 @@ protected:
   }
 
 private:
-
   bool load_config(pugi::xml_document &a_config, VerifyLoadswitchWiringFunc a_func)
   {
     bool result = true;
@@ -5397,8 +5292,8 @@ private:
   bool log_sdlc_frames_{false};
 };
 
-}
+}// namespace vtc::hils
 #endif
 
 #pragma clang diagnostic pop
-#pragma warning(default:4068)
+#pragma warning(default : 4068)
