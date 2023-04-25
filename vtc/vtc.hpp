@@ -2072,10 +2072,8 @@ namespace impl {
  * @param a_seq - Compile time integer sequence, the first one being the subject channel.
  */
 template<Index Ix, Index Iy, Index... Iys>
-void SetMMU16ChannelCompatibility(const std::bitset<0x78> &a_mmu16_comp,
-                                  std::integer_sequence<Index, Ix, Iy, Iys...> a_seq)
+void SetMMU16ChannelCompatibility(const std::bitset<0x78> &a_mmu16_comp, std::integer_sequence<Index, Ix, Iy, Iys...> a_seq)
 {
-  // @formatter:off
   mmu::variable<ChannelCompatibilityStatus<Ix, Iy>>.value = static_cast<Bit>(a_mmu16_comp[ChannelSegmentStartPos<Ix>() + Iy - Ix - 1]);
 
   if constexpr (a_seq.size() > 2) {
@@ -2083,7 +2081,6 @@ void SetMMU16ChannelCompatibility(const std::bitset<0x78> &a_mmu16_comp,
   } else {
     return;
   }
-  // @formatter:on
 }
 
 /*!
@@ -2096,19 +2093,15 @@ void SetMMU16ChannelCompatibility(const std::bitset<0x78> &a_mmu16_comp,
  * @param a_seq - Compile time integer sequence, the first one being the subject channel.
  */
 template<Index Ix, Index Iy, Index... Iys>
-void GetMMU16ChannelCompatibility(std::bitset<0x78> &a_mmu16_comp,
-                                  std::integer_sequence<Index, Ix, Iy, Iys...> a_seq)
+void GetMMU16ChannelCompatibility(std::bitset<0x78> &a_mmu16_comp, std::integer_sequence<Index, Ix, Iy, Iys...> a_seq)
 {
-  // @formatter:off
   a_mmu16_comp[ChannelSegmentStartPos<Ix>() + Iy - Ix - 1] = (mmu::variable<ChannelCompatibilityStatus<Ix, Iy>>.value == Bit::On) ? 1 : 0;
 
   if constexpr (a_seq.size() > 2) {
-    return GetMMU16ChannelCompatibility(a_mmu16_comp,
-                                        std::integer_sequence<Index, Ix, Iys...>{});
+    return GetMMU16ChannelCompatibility(a_mmu16_comp, std::integer_sequence<Index, Ix, Iys...>{});
   } else {
     return;
   }
-  // @formatter:on
 }
 
 }// namespace impl
@@ -2121,7 +2114,6 @@ void GetMMU16ChannelCompatibility(std::bitset<0x78> &a_mmu16_comp,
 template<Index Ix = 1>
 void SetMMU16ChannelCompatibility(const std::bitset<0x78> &a_mmu16_comp)
 {
-  // @formatter:off
   if constexpr (Ix < 16) {
     using T = typename add_sequence_front<Ix, ChannelCompatibilityPairedIndexes<Ix>>::type;
     impl::SetMMU16ChannelCompatibility(a_mmu16_comp, T{});
@@ -2129,7 +2121,6 @@ void SetMMU16ChannelCompatibility(const std::bitset<0x78> &a_mmu16_comp)
   } else {
     return;
   }
-  // @formatter:on
 }
 
 /*!
@@ -2140,7 +2131,6 @@ void SetMMU16ChannelCompatibility(const std::bitset<0x78> &a_mmu16_comp)
 template<Index Ix = 1>
 void GetMMU16ChannelCompatibility(std::bitset<0x78> &a_mmu16_comp)
 {
-  // @formatter:off
   if constexpr (Ix < 16) {
     using T = typename add_sequence_front<Ix, ChannelCompatibilityPairedIndexes<Ix>>::type;
     impl::GetMMU16ChannelCompatibility(a_mmu16_comp, T{});
@@ -2148,7 +2138,6 @@ void GetMMU16ChannelCompatibility(std::bitset<0x78> &a_mmu16_comp)
   } else {
     return;
   }
-  // @formatter:on
 }
 
 /*!
@@ -2189,27 +2178,26 @@ void reverse(std::bitset<N> &a_bitset)
  *    10 - 12
  */
 void SetDefaultMMU16ChannelCompatibility()
-{
+{// clang-format off
   std::bitset<0x78> mmu16_comp_def{
-      // @formatter:off
-      /*    23456789ABCDEFG */
-      /*1*/ "000110000100000"
-            /*2*/ "00110010100000"
-            /*3*/ "0001100010000"
-            /*4*/ "001101010000"
-            /*5*/ "00010000000"
-            /*6*/ "0010100000"
-            /*7*/ "001000000"
-            /*8*/ "01010000"
-            /*9*/ "0100000"
-            /*A*/ "010000"
-            /*B*/ "00000"
-            /*C*/ "0000"
-            /*D*/ "000"
-            /*E*/ "00"
-            /*F*/ "0"
-      // @formatter:on
-  };
+  /*     23456789ABCDEFG */
+  /*1*/ "000110000100000"
+  /*2*/  "00110010100000"
+  /*3*/   "0001100010000"
+  /*4*/    "001101010000"
+  /*5*/     "00010000000"
+  /*6*/      "0010100000"
+  /*7*/       "001000000"
+  /*8*/        "01010000"
+  /*9*/         "0100000"
+  /*A*/          "010000"
+  /*B*/           "00000"
+  /*C*/            "0000"
+  /*D*/             "000"
+  /*E*/              "00"
+  /*F*/               "0"};
+  // clang-format on
+
   // The bitset needs to be reversed, so the least significant bit
   // represents the starting compatibility bit, i.e., compat<1,2>
   reverse(mmu16_comp_def);
@@ -2560,9 +2548,7 @@ private:
   {
     if constexpr (I < sizeof...(Ts)) {
       std::get<I>(m_frame_elements) << a_data_in;
-      //@formatter:off
       Assign<I + 1>(a_data_in);
-      //@formatter:on
     }
   }
 
@@ -2571,9 +2557,7 @@ private:
   {
     if constexpr (I < sizeof...(Ts)) {
       std::get<I>(m_frame_elements) >> a_data_out;
-      //@formatter:off
       Generate<I + 1>(a_data_out);
-      //@formatter:on
     }
   }
 
@@ -4358,9 +4342,7 @@ std::tuple<bool, std::span<Byte>> Dispatch(std::span<const Byte> a_data_in)
       res_frame >> serial::buffer;// Buffer will be emptied at the beginning of >>().
       return {true, {serial::buffer.data(), res_frame.bytesize}};
     } else {
-      // @formatter:off
       return Dispatch<I + 1>(a_data_in);
-      // @formatter:on
     }
   } else {
     return {false, serial::buffer};
